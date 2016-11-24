@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
-
-// TODO: ^ Add "strings" and "time" back to import
 
 // Needed for function pointer (t *SimpleChaincode)
 // Leave empty
@@ -30,8 +29,9 @@ type Energy struct {
 type AnOpenTrade struct {
 	Owner     string `json:"owner"`     // Owner of the energy that initiates the trade
 	Timestamp int64  `json:"timestamp"` // UTC Timestamp of when the offer was created
-	Want      int    `json:"want"`      // Minimum amount of energy desired
-	Willing   int    `json:"willing"`   // Maximum price willing to spend
+	Id        string `json:"id"`        // Id of the asset used to create the trade
+	Amount    int    `json:"amount"`    // Amount of energy for trade
+	Price     int    `json:"price"`     // Minimum price willing to accept
 }
 
 type AllTrades struct {
@@ -352,6 +352,8 @@ func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []s
 	return nil, nil
 }
 
+// set_owner function
+// Set the owner of an energy asset
 func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
@@ -387,3 +389,175 @@ func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []str
 	fmt.Println("Done setting owner")
 	return nil, nil
 }
+
+// open_trade function
+// Create an open trade for an energy asset you have
+func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	fmt.Println("Starting open_trade")
+	// Arguments passed in the following order:
+	// 0 --> "bob" == Owner
+	// 1 --> "asset1" == Unique Identifier
+
+	if len(args) < 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 4.")
+	}
+	owner := args[0]
+	id := args[1]
+
+	// Verify ownership of the asset before opening up a trade
+	assetAsBytes, err := stub.GetState(id)
+	if err != nil {
+		return nil, errors.New("Failed to get energy asset id")
+	}
+	res := Energy{}
+	json.Unmarshal(assetAsBytes, &res)
+	if res.Owner != owner {
+		return nil, errors.New("Invalid trade opening: " + owner + " does not own the asset " + id)
+	}
+
+	// Verify that the asset is not current part of an outstanding trade
+	// Get the open trade struct
+	tradesAsBytes, err := stub.GetState(openTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get opentrades")
+	}
+	var trades AllTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	// Search through open trades looking for asset
+	for i := range trades.OpenTrades {
+		if trades.OpenTrades[i].Id == id {
+			return nil, errors.New("Invalid trade opening: Asset for trade cannot be part of existing open trade")
+		}
+	}
+
+	// Ownership has been verified and asset is not part of an outstanding offer
+	// Create a new trade offer
+	open := AnOpenTrade{}
+	open.Owner = owner
+	open.Timestamp = time.Now().Unix() // [Use timestamp as unique identifier for trades]
+	open.Amount = res.Amount
+	open.Price = res.Price
+	open.Id = id
+	// Set a variable in the chaincode for debug
+	jsonAsBytes, _ := json.Marshal(open)
+	err = stub.PutState("_lastOpenedTrade", jsonAsBytes)
+
+	// Append the new trade to the list of open trades
+	trades.OpenTrades = append(trades.OpenTrades, open)
+	fmt.Println("Appended new trade opening")
+	jsonAsBytes, _ = json.Marshal(trades)
+	err = stub.PutState(openTradesStr, jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("End open trade")
+	return nil, nil
+}
+
+// Perform trade function
+// Close an open trade and move ownership to the buyer
+func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	// Arguments are passed in the following order:
+	// 0 --> "asset1" == Unique Id of the energy asset to trade
+	// 1 --> "alice" == New owner
+	if len(args) < 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
+	}
+	id := args[0]
+	newOwner := args[1]
+
+	fmt.Println("Start perform trade")
+
+	// Get the open trade struct
+	tradesAsBytes, err := stub.GetState(openTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get opentrades")
+	}
+	var trades AllTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	for i := range trades.OpenTrades {
+		fmt.Println("Looking at " + trades.OpenTrades[i].Id + " for " + id)
+		if trades.OpenTrades[i].Id == id {
+			fmt.Println("Found the trade to perform")
+
+			// Get the asset that will be traded
+			assetAsBytes, err := stub.GetState(id)
+			if err != nil {
+				return nil, errors.New("Failed to get the asset")
+			}
+			asset := Energy{}
+			json.Unmarshal(assetAsBytes, &asset)
+
+			// Verify that the new owner is not the current owner
+			if asset.Owner == newOwner {
+				return nil, errors.New("New asset owner cannot be the current owner")
+			}
+
+			// Change the owner of the asset
+			t.set_owner(stub, []string{id, newOwner})
+
+			// Remove the trade from the list of open trades
+			trades.OpenTrades = append(trades.OpenTrades[:i], trades.OpenTrades[i+1:]...)
+			jsonAsBytes, _ := json.Marshal(trades)
+			err = stub.PutState(openTradesStr, jsonAsBytes)
+			if err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
+	fmt.Println("End perform trade")
+	return nil, nil
+}
+
+// Remove Open trade
+// Close an open trade with no change of ownership taking place
+func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	// Only argument needed is the unique ID of the asset that should no longer be eligible for trade
+	if len(args) < 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	}
+	id := args[0]
+
+	fmt.Println("Begin remove trade")
+
+	// get the open trade struct
+	tradesAsBytes, err := stub.GetState(openTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get open trades")
+	}
+	var trades AllTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	// Look for the trade in the list of open trades
+	for i := range trades.OpenTrades {
+		if trades.OpenTrades[i].Id == id {
+			fmt.Println("Found trade to remove")
+			// Remove this trade from the list
+			trades.OpenTrades = append(trades.OpenTrades[:i], trades.OpenTrades[i+1:]...)
+			jsonAsBytes, _ := json.Marshal(trades)
+			// Rewrite the open orders to the chaincode state
+			err = stub.PutState(openTradesStr, jsonAsBytes)
+			if err != nil {
+				return nil, err
+			}
+			// Done removing, break
+			break
+		}
+	}
+
+	// Successful return
+	fmt.Println("End remove trade")
+	return nil, nil
+}
+
+// Clean up open trades
+// Make sure all open trades are still possible/valid, and remove those that are not
