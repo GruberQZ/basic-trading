@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -16,14 +17,14 @@ import (
 type SimpleChaincode struct {
 }
 
-var energyIdStr = "_energyindex"  // name for the key/value that will store a list of all known energy
-var openTradesStr = "_opentrades" // name for the key/value that will store a list of open trades
+var energyIndexStr = "_energyindex" // name for the key/value that will store a list of all known energy
+var openTradesStr = "_opentrades"   // name for the key/value that will store a list of open trades
 
 type Energy struct {
-	Owner  string `json:"owner"`  // Person who owns the energy
+	Id     string `json:"id"`     // Unique Identifier
 	Amount int    `json:"amount"` // Amount of energy
 	Price  int    `json:"price"`  // Selling price
-	Id     string `json:"id"`     // Unique Identifier
+	Owner  string `json:"owner"`  // Person who owns the energy
 }
 
 type AnOpenTrade struct {
@@ -72,7 +73,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	// Use that encoding to clear out the list of energy assets
 	var empty []string
 	jsonAsBytes, _ := json.Marshal(empty)
-	err = stub.PutState(energyIdStr, jsonAsBytes)
+	err = stub.PutState(energyIndexStr, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +210,7 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 	}
 
 	// Get the energy index
-	energyAsBytes, err := stub.GetState(energyIdStr)
+	energyAsBytes, err := stub.GetState(energyIndexStr)
 	if err != nil {
 		return nil, errors.New("Failed to get energy index")
 	}
@@ -239,7 +240,7 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 
 	// Turn energyIndex back into JSON for chaincode state
 	jsonAsBytes, _ := json.Marshal(energyIndex)
-	err = stub.PutState(energyIdStr, jsonAsBytes)
+	err = stub.PutState(energyIndexStr, jsonAsBytes)
 	// Successful exit
 	return nil, nil
 }
@@ -263,5 +264,126 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 	}
 
 	// Successful exit
+	return nil, nil
+}
+
+// Initialize new energy asset
+// Create a new energy asset and store it in the chaincode state
+func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	// Arguments passed in the following order:
+	// 0 --> "asset1" == Unique Identifier
+	// 1 --> "50" == Amount of energy
+	// 2 --> "25" == Price of energy
+	// 3 --> "bob" == Owner of the energy
+
+	// Check the number of arguments passed in
+	if len(args) != 4 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 4.")
+	}
+
+	// Check for valid input
+	fmt.Println("Creating a new energy asset")
+	if len(args[0]) <= 0 {
+		return nil, errors.New("1st argument must be a non-empty string")
+	}
+	if len(args[1]) <= 0 {
+		return nil, errors.New("2nd argument must be a non-empty string")
+	}
+	if len(args[2]) <= 0 {
+		return nil, errors.New("3rd argument must be a non-empty string")
+	}
+	if len(args[3]) <= 0 {
+		return nil, errors.New("4th argument must be a non-empty string")
+	}
+
+	// Rename and convert variables
+	id := strings.ToLower(args[0])
+	amount, err := strconv.Atoi(args[1])
+	if err != nil {
+		return nil, errors.New("2nd argument must be a numeric string")
+	}
+	price, err := strconv.Atoi(args[2])
+	if err != nil {
+		return nil, errors.New("3rd argument must be a numeric string")
+	}
+	owner := strings.ToLower(args[3])
+
+	// Check to see if energy asset with this id already exists
+	assetAsBytes, err := stub.GetState(id)
+	if err != nil {
+		return nil, errors.New("Failed to get energy asset id")
+	}
+	res := Energy{}
+	json.Unmarshal(assetAsBytes, &res)
+	// If there exists an energy asset with the same name, error
+	if res.Id == id {
+		fmt.Println("An energy asset with this id already exists: " + id)
+		fmt.Println(res)
+		return nil, errors.New("An energy asset with this id already exists")
+	}
+
+	// Build the JSON string representation of the new energy asset
+	str := `{"id": "` + id + `", "amount": ` + strconv.Itoa(amount) + `, "price": ` + strconv.Itoa(price) + `, "owner": "` + owner + `"}`
+	// Store this energy asset with the id as the key
+	err = stub.PutState(id, []byte(str))
+
+	// Add this energy asset to the energy index
+	energyAsBytes, err := stub.GetState(energyIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get the energy index")
+	}
+
+	// Convert the energy index into an array of strings
+	var energyIndex []string
+	json.Unmarshal(energyAsBytes, &energyIndex)
+
+	// Append the energy asset to the energy index
+	energyIndex = append(energyIndex, id)
+	// Debug message
+	fmt.Println("Current energy index: ", energyIndex)
+	// Re-encode the new energy index and write it back to the chaincode state
+	jsonAsBytes, _ := json.Marshal(energyIndex)
+	err = stub.PutState(energyIndexStr, jsonAsBytes)
+
+	// Debug message & successful return
+	fmt.Println("End initialize energy asset")
+	return nil, nil
+}
+
+func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	// Arguments passed in the following order:
+	// 0 --> "asset1" == Unique Identifier
+	// 1 --> "alice" == New owner of this asset
+	if len(args) < 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2: asset identifier and new owner")
+	}
+
+	id := args[0]
+	owner := args[1]
+	fmt.Println("Starting set owner")
+	fmt.Println("Setting owner of " + id + " to " + owner)
+	energyAsBytes, err := stub.GetState(id)
+	if err != nil {
+		return nil, errors.New("Failed to get energy asset")
+	}
+
+	// Get the asset and change the owner
+	res := Energy{}
+	json.Unmarshal(energyAsBytes, &res)
+	res.Owner = owner
+
+	// Rewrite the energy asset into the chaincode state
+	jsonAsBytes, _ := json.Marshal(res)
+	err = stub.PutState(id, jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Successful exit
+	fmt.Println("Done setting owner")
 	return nil, nil
 }
