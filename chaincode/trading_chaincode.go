@@ -250,4 +250,18 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 	var name, value string
 	var err error
 
+	// Debug message
+	fmt.Println("Running Write()")
+
+	// Rename for clarity
+	name = args[0]
+	value = args[1]
+	// Write variable into the chaincode state
+	err = stub.PutState(name, []byte(value))
+	if err != nil {
+		return nil, err
+	}
+
+	// Successful exit
+	return nil, nil
 }
