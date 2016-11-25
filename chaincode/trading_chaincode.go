@@ -561,3 +561,73 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 
 // Clean up open trades
 // Make sure all open trades are still possible/valid, and remove those that are not
+func cleanTrades(stub shim.ChaincodeStubInterface) (err error) {
+	// var didWork = false
+	fmt.Println("Start cleaning trades")
+
+	// Get the open trade struct
+	tradesAsBytes, err := stub.GetState(openTradesStr)
+	if err != nil {
+		return errors.New("Failed to get open trades")
+	}
+	var trades AllTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	// Get the energy index
+	energyAsBytes, err := stub.GetState(energyIndexStr)
+	if err != nil {
+		return errors.New("Failed to get energy index")
+	}
+	// Turn the energy index into a string array
+	var energyIndex []string
+	json.Unmarshal(energyAsBytes, &energyIndex)
+
+	// Count the number of trades
+	fmt.Println("# of open trades: " + strconv.Itoa(len(trades.OpenTrades)))
+	// Iterate over all of the trades
+	// Create a new list of all the trades that are valid
+	var validTrades AllTrades
+	for i := 0; i < len(trades.OpenTrades); i++ {
+		// Look at every trade in the list
+		currentTrade := trades.OpenTrades[i]
+		// Determine if the asset still exists
+		assetStillExists := false
+		for j := range energyIndex {
+			if currentTrade.Id == energyIndex[j] {
+				assetStillExists = true
+				break
+			}
+		}
+		if assetStillExists == false {
+			continue
+		}
+		// Determine if the asset is still owned by the person who initiated the trade
+		// Get the state of the asset now that we know it exists
+		assetAsBytes, assetErr := stub.GetState(currentTrade.Id)
+		if assetErr != nil {
+			return errors.New("Failed to get energy asset id")
+		}
+		res := Energy{}
+		json.Unmarshal(assetAsBytes, &res)
+		// If the owner of the asset is not the person who initiated trade, invalid trade
+		if currentTrade.Owner != res.Owner {
+			continue
+		}
+		// Transaction is still valid, add it to the validTrades
+		// Append the energy asset to the energy index
+		validTrades.OpenTrades = append(validTrades.OpenTrades, currentTrade)
+	}
+
+	// Write the valid trades to the current state
+	fmt.Println("Writing valid trades to chaincode state")
+	jsonAsBytes, _ := json.Marshal(validTrades)
+	err = stub.PutState(openTradesStr, jsonAsBytes)
+	if err != nil {
+		return err
+	}
+
+	// Successful exit
+	fmt.Println("End trade cleaning")
+	return nil
+
+}
