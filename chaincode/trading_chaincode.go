@@ -162,6 +162,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// Handle the different types of query functions
 	if function == "read" {
 		return t.read(stub, args)
+	} else if function == "query_functions" {
+		return t.query_functions(stub)
 	}
 
 	// Print message if query function not found
@@ -190,8 +192,26 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 		return nil, errors.New(jsonResp)
 	}
 
+	// Return message if variable doesn't exist
+	// Variable does not exist if byte array has length 0
+	if len(valAsBytes) == 0 {
+		return []byte("Variable \"" + name + "\" does not exist"), nil
+	}
+
 	// Successful return
 	return valAsBytes, nil
+}
+
+// Query functions
+// Return a list of all available query function names
+func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return []byte("read, query_functions, invoke_functions"), nil
+}
+
+// Invoke functions
+// Return a list of all available invoke function names
+func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return []byte("init, delete, write, init_energy, set_owner, set_price, open_trade, perform_trade, remove_trade"), nil
 }
 
 // Delete function
@@ -522,10 +542,11 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 	var err error
 
 	// Only argument needed is the unique ID of the asset that should no longer be eligible for trade
-	if len(args) < 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
 	}
-	id := args[0]
+	owner := args[0]
+	id := args[1]
 
 	fmt.Println("Begin remove trade")
 
@@ -540,7 +561,11 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 	// Look for the trade in the list of open trades
 	for i := range trades.OpenTrades {
 		if trades.OpenTrades[i].Id == id {
-			fmt.Println("Found trade to remove")
+			fmt.Println("Found trade to remove, checking owner")
+			// Verify owner is the one removing the trade
+			if trades.OpenTrades[i].Owner != owner {
+				return nil, errors.New("Error removing trade: Only trade order creator can remove their trade order.")
+			}
 			// Remove this trade from the list
 			trades.OpenTrades = append(trades.OpenTrades[:i], trades.OpenTrades[i+1:]...)
 			jsonAsBytes, _ := json.Marshal(trades)
