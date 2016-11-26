@@ -97,7 +97,7 @@ Example: Delete the variable "ece" from the chaincode state
 {
   "id": "asset1"  // Unique Identifier
   "amount" "50"   // Amount of energy
-	"price": "25"   // Selling price
-	"owner": "bob"  // Person who owns the energy
+  "price": "25"   // Selling price
+  "owner": "bob"  // Person who owns the energy
 }
 ```
