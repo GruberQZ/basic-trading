@@ -143,7 +143,7 @@ Example: Bob creates an open trade order for his asset called "asset1"
       "function": "init_energy",
       "args": [
         "bob",
-        "asset1",
+        "asset1"
       ]
     },
     "secureContext": "user_type1_1"
