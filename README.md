@@ -10,6 +10,7 @@ The "method" property in the JSON object that is sent to /chaincode for operatio
 Function name: "read"  
 Arguments: 1  
 1) The name of the variable to be read from the chaincode state  
+  
 Example: Read the variable "ece" from the chaincode state  
 ```javascript
 {
@@ -24,6 +25,37 @@ Example: Read the variable "ece" from the chaincode state
       "function": "read",
       "args": [
         "ece"
+      ]
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
+
+### Invoke  
+The "method" property in the JSON object that is sent to /chaincode for operations in this section should be set to "query".  
+#### Write a variable to the chaincode state  
+Function name: "write"  
+Arguments: 2  
+1) Name of the variable  
+2) Value of the variable  
+
+Example: Write the variable "ece" to the chaincode state  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "invoke",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "write",
+      "args": [
+        "ece",
+        "485"
       ]
     },
     "secureContext": "user_type1_1"
