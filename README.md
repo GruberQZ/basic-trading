@@ -2,11 +2,11 @@
 Testing Blockchain  
 
 Based on IBM Blockchain Marbles Tutorial  
-## Usage  
+# Usage  
 This section breaks chaincode operations into sections based on their type and their usage. To use these commands, edit the "ctorMsg" property of the JSON object that is sent to /chaincode. Arguments to functions are always passed in as a string array.  
-### Query  
+## Query  
 The "method" property in the JSON object that is sent to /chaincode for operations in this section should be set to "query".
-#### Read a variable from the chaincode state  
+### Read a variable from the chaincode state  
 Function name: "read"  
 Arguments: 1  
 1) The name of the variable to be read from the chaincode state  
@@ -33,9 +33,9 @@ Example: Read the variable "ece" from the chaincode state
 }
 ```
 
-### Invoke  
+## Invoke  
 The "method" property in the JSON object that is sent to /chaincode for operations in this section should be set to "query".  
-#### Write a variable to the chaincode state  
+### Write a variable to the chaincode state  
 Function name: "write"  
 Arguments: 2  
 1) Name of the variable  
@@ -63,7 +63,7 @@ Example: Write the value "485" to the variable "ece" to the chaincode state
   "id": 0
 }
 ```
-#### Delete a variable from the chaincode state
+### Delete a variable from the chaincode state
 Function name: "delete"  
 Arguments: 1  
 1) Name of the variable to delete
@@ -87,5 +87,17 @@ Example: Delete the variable "ece" from the chaincode state
     "secureContext": "user_type1_1"
   },
   "id": 0
+}
+```
+### Initialize a new Energy asset
+
+
+# The Energy Asset
+```javascript
+{
+  "id": "asset1"  // Unique Identifier
+  "amount" "50"   // Amount of energy
+	"price": "25"   // Selling price
+	"owner": "bob"  // Person who owns the energy
 }
 ```
