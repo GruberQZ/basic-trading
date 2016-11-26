@@ -92,12 +92,12 @@ Example: Delete the variable "ece" from the chaincode state
 ### Create a new Energy asset  
 Function name: "init_energy"  
 Arguments: 4  
-1) Unique identifier
-2) Amount of energy in this asset
-3) Price of energy in this asset
-4) Owner of the energy
+1) Unique identifier  
+2) Amount of energy in this asset  
+3) Price of energy in this asset  
+4) Owner of the energy  
 
-Example: Create a new energy asset called "asset1" that is owned by bob with energy amount 50 and price 25
+Example: Create a new energy asset called "asset1" that is owned by bob with energy amount 50 and price 25  
 ```javascript
 {
   "jsonrpc": "2.0",
