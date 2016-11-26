@@ -89,8 +89,38 @@ Example: Delete the variable "ece" from the chaincode state
   "id": 0
 }
 ```
-### Initialize a new Energy asset
+### Create a new Energy asset  
+Function name: "init_energy"  
+Arguments: 4  
+1) Unique identifier
+2) Amount of energy in this asset
+3) Price of energy in this asset
+4) Owner of the energy
 
+Example: Create a new energy asset called "asset1" that is owned by bob with energy amount 50 and price 25
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "invoke",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "init_energy",
+      "args": [
+        "asset1",
+        "50",
+        "25",
+        "bob"
+      ]
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
 
 # The Energy Asset
 ```javascript
