@@ -122,7 +122,33 @@ Example: Create a new energy asset called "asset1" that is owned by bob with ene
 }
 ```
 ### Set the owner of an energy asset
+Function name: "set_owner"  
+Arguments: 2  
+1) Unique Indentifier of an energy asset  
+2) New owner of that energy asset  
 
+Example: Set the owner of asset1 to alice  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "invoke",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "set_owner
+      "args": [
+        "asset1",
+        "alice"
+      ]
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
 ### Open up a new trade order  
 Function name: "open_trade"  
 Arguments: 2  
@@ -182,6 +208,33 @@ Example: alice purchases the asset "asset1" that bob listed previously
 ```
 
 ### Remove an open trade order
+Function name: "remove_trade"  
+Arguments: 2  
+1) Creator of the open trade agreement  
+2) Unique Identifier of energy asset in open trade order  
+
+Example: Remove the bob's open trade order for asset1  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "invoke",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "remove_trade",
+      "args": [
+        "bob",
+        "asset1"
+      ]
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
 
 # The Energy Asset
 ```javascript
