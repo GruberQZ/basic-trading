@@ -153,6 +153,33 @@ Example: Bob creates an open trade order for his asset called "asset1"
 ```
 
 ### Fulfill an open trade order
+Function name: "perform_trade"  
+Arguments: 2  
+1) Energy asset that will be bought  
+2) New owner of the energy asset (purchaser)    
+
+Example: alice purchases the asset "asset1" that bob listed previously  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "invoke",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "perform_trade",
+      "args": [
+        "asset1",
+        "alice"
+      ]
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
 
 ### Remove an open trade order
 
