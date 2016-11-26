@@ -121,6 +121,13 @@ Example: Create a new energy asset called "asset1" that is owned by bob with ene
   "id": 0
 }
 ```
+### Set the owner of an energy asset
+
+### Open up a new trade order
+
+### Fulfill an open trade order
+
+### Remove an open trade order
 
 # The Energy Asset
 ```javascript
