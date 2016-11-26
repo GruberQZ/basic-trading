@@ -1,21 +1,17 @@
-# basic-trading
-Testing Blockchain
+# basic-trading  
+Testing Blockchain  
 
-Based on IBM Blockchain Marbles Tutorial
-
-## Usage
-This section breaks chaincode operations into sections based on their type and their usage. To use these commands, edit the "ctorMsg" property of the JSON object that is sent to /chaincode. Arguments to functions are always passed in as a string array.
-
-### Query
+Based on IBM Blockchain Marbles Tutorial  
+## Usage  
+This section breaks chaincode operations into sections based on their type and their usage. To use these commands, edit the "ctorMsg" property of the JSON object that is sent to /chaincode. Arguments to functions are always passed in as a string array.  
+### Query  
 The "method" property in the JSON object that is sent to /chaincode for operations in this section should be set to "query".
-
-#### Read a variable from the chaincode state
-Function name: "read"
-Arguments: 1
-1) The name of the variable to be read from the chaincode state
-
+#### Read a variable from the chaincode state  
+Function name: "read"  
+Arguments: 1  
+1) The name of the variable to be read from the chaincode state  
+Example: Read the variable "ece" from the chaincode state  
 ```javascript
-Example:
 {
   "jsonrpc": "2.0",
   "method": "query",
