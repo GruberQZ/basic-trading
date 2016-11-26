@@ -41,7 +41,7 @@ Arguments: 2
 1) Name of the variable  
 2) Value of the variable  
 
-Example: Write the variable "ece" to the chaincode state  
+Example: Write the value "485" to the variable "ece" to the chaincode state  
 ```javascript
 {
   "jsonrpc": "2.0",
