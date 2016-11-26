@@ -138,3 +138,13 @@ Example: Create a new energy asset called "asset1" that is owned by bob with ene
   "owner": "bob"  // Person who owns the energy
 }
 ```
+# The Open Trade order
+```javascript
+{
+  "owner": "bob"           // Owner of the energy that initiates the trade
+  "timestamp": <timestamp> // UTC Timestamp of when the offer was created
+  "id": "asset1"           // Id of the asset used to create the trade
+  "amount": "50"           // Amount of energy for trade
+  "price": "25"            // Minimum price willing to accept
+}
+```
