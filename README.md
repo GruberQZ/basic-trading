@@ -140,7 +140,7 @@ Example: Bob creates an open trade order for his asset called "asset1"
       "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
     },
     "ctorMsg": {
-      "function": "init_energy",
+      "function": "open_trade",
       "args": [
         "bob",
         "asset1"
