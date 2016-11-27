@@ -4,7 +4,7 @@ Testing Blockchain on Bluemix
 Based on IBM Blockchain Marbles Tutorial 
 
 ## Warning
-The params.chaincodeID.name property that is used in the examples below is likely out of date. Contact the author for the updated chaincodeID.
+The params.chaincodeID.name property that is used in the examples below is likely out of date. Contact the author for the updated chaincodeID in order to access all of the functionality detailed below.
 # Usage  
 This section breaks chaincode operations into sections based on their type and their usage. To use these commands, edit the "ctorMsg" property of the JSON object that is sent to /chaincode. Arguments to functions are always passed in as a string array.
 ## Query  
