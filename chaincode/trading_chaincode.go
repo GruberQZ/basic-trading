@@ -236,6 +236,53 @@ func (t *SimpleChaincode) open_trades(stub shim.ChaincodeStubInterface) ([]byte,
 	return tradesAsBytes, nil
 }
 
+// View My Assets
+// View a list of all assets owned by an individual
+func (t *SimpleChaincode) view_my_assets(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	// Get parameters
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1: Owner's name")
+	}
+	owner := args[0]
+	var ownerAssets []Energy
+
+	// Get the energy index
+	energyAsBytes, err := stub.GetState(energyIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get energy index")
+	}
+	// Turn the energy index into a string array
+	var energyIndex []string
+	json.Unmarshal(energyAsBytes, &energyIndex)
+
+	// Iterate through the energy index
+	for i, id := range energyIndex {
+		// Debug message
+		fmt.Println(strconv.Itoa(i) + ": looking at asset with id " + id)
+		// Get the asset from the chaincode state
+		assetAsBytes, err := stub.GetState(id)
+		if err != nil {
+			return nil, errors.New("Failed to get energy asset id")
+		}
+		res := Energy{}
+		json.Unmarshal(assetAsBytes, &res)
+		// If the asset is owned by the owner requesting the list,
+		// add the asset to the ownerAssets array
+		if res.Owner == owner {
+			ownerAssets = append(ownerAssets, res)
+		}
+	}
+
+	// Return the completed list to the requester
+	// Send message if owner does not own anything
+	if len(ownerAssets) == 0 {
+		return []byte(owner + ", it appears you do not own any assets!"), nil
+	}
+	// Prepare ownerAssets for return
+	jsonAsBytes, _ := json.Marshal(ownerAssets)
+	return jsonAsBytes, nil
+}
+
 // Delete function
 // Remove a key/value pair from the chaincode state
 func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
