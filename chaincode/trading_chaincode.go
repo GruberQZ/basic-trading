@@ -175,6 +175,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		return t.invoke_functions(stub)
 	} else if function == "open_trades" {
 		return t.open_trades(stub)
+	} else if function == "view_my_assets" {
+		return t.view_my_assets(stub, args)
 	}
 
 	// Print message if query function not found
@@ -449,7 +451,7 @@ func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []str
 	// Arguments passed in the following order:
 	// 0 --> "asset1" == Unique Identifier
 	// 1 --> "alice" == New owner of this asset
-	if len(args) < 2 {
+	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2: asset identifier and new owner")
 	}
 
@@ -551,7 +553,7 @@ func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []st
 	// 0 --> "bob" == Owner
 	// 1 --> "asset1" == Unique Identifier
 
-	if len(args) < 2 {
+	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 4.")
 	}
 	owner := args[0]
@@ -616,7 +618,7 @@ func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args [
 	// Arguments are passed in the following order:
 	// 0 --> "asset1" == Unique Id of the energy asset to trade
 	// 1 --> "alice" == New owner
-	if len(args) < 2 {
+	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
 	}
 	id := args[0]
