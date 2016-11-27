@@ -131,6 +131,13 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		cleanTrades(stub)
 		// Return result from set_owner()
 		return res, err
+	} else if function == "set_price" {
+		// Call the set_owner() function
+		res, err := t.set_price(stub, args)
+		// Make sure open trades are still valid after price changes
+		cleanTrades(stub)
+		// Return result from set_owner()
+		return res, err
 	} else if function == "open_trade" { // Create a new trade order
 		// Pass arguments along to the open_trade function
 		return t.open_trade(stub, args)
@@ -164,12 +171,16 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		return t.read(stub, args)
 	} else if function == "query_functions" {
 		return t.query_functions(stub)
+	} else if function == "invoke_functions" {
+		return t.invoke_functions(stub)
+	} else if function == "open_trades" {
+		return t.open_trades(stub)
 	}
 
 	// Print message if query function not found
 	fmt.Println("Query() did not find function: " + function)
 
-	// Return on error
+	// Return an error
 	return nil, errors.New("Received unknown query function: " + function)
 }
 
@@ -204,14 +215,25 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 
 // Query functions
 // Return a list of all available query function names
-func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	return []byte("read, query_functions, invoke_functions"), nil
+func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface) ([]byte, error) {
+	return []byte("read, query_functions, invoke_functions, open_trades"), nil
 }
 
 // Invoke functions
 // Return a list of all available invoke function names
-func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) invoke_functions(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	return []byte("init, delete, write, init_energy, set_owner, set_price, open_trade, perform_trade, remove_trade"), nil
+}
+
+// Query Open Trades
+// View all open trades
+func (t *SimpleChaincode) open_trades(stub shim.ChaincodeStubInterface) ([]byte, error) {
+	// Get the open trade array from the chaincode state
+	tradesAsBytes, err := stub.GetState(openTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get opentrades")
+	}
+	return tradesAsBytes, nil
 }
 
 // Delete function
@@ -408,6 +430,68 @@ func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []str
 	// Successful exit
 	fmt.Println("Done setting owner")
 	return nil, nil
+}
+
+// Set price function
+// Set the price attribute of an energy asset
+func (t *SimpleChaincode) set_price(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	// Check arguments
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 3.")
+	}
+	owner := args[0]
+	id := args[1]
+	newPrice, err := strconv.Atoi(args[2])
+	if err != nil {
+		return nil, errors.New("Price (3rd argument) must be a numeric string")
+	}
+	if newPrice < 0 {
+		return nil, errors.New("Price (3rd argument) must not be less than 0")
+	}
+
+	// Get the energy index
+	energyAsBytes, err := stub.GetState(energyIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get energy index")
+	}
+	// Turn the energy index into a string array
+	var energyIndex []string
+	json.Unmarshal(energyAsBytes, &energyIndex)
+
+	// Iterate through the energy index looking for the energy asset
+	for i, val := range energyIndex {
+		// Debug message
+		fmt.Println(strconv.Itoa(i) + " - looking at " + val + " for " + id)
+		// Determine if this is the correct energy asset
+		if val == id {
+			fmt.Println("Found energy asset to edit")
+			// Get the asset from the chiancode state
+			assetAsBytes, err := stub.GetState(id)
+			if err != nil {
+				return nil, errors.New("Failed to get energy asset")
+			}
+			res := Energy{}
+			json.Unmarshal(assetAsBytes, &res)
+			// Verify that the energy asset is owned by the person requesting the price adjustment
+			if res.Owner != owner {
+				return nil, errors.New("Error: Asset not owned by requester")
+			}
+			// Change the price of the asset and write it back into the chaincode state
+			res.Price = newPrice
+			jsonAsBytes, _ := json.Marshal(res)
+			err = stub.PutState(id, jsonAsBytes)
+			if err != nil {
+				return nil, err
+			}
+			// Found asset to remove, return
+			return []byte("Price of " + id + " changed to " + args[2]), nil
+		}
+	}
+
+	// Unsuccessful return
+	return nil, errors.New("Price could not be set because asset does not exist")
 }
 
 // open_trade function
@@ -638,6 +722,8 @@ func cleanTrades(stub shim.ChaincodeStubInterface) (err error) {
 		if currentTrade.Owner != res.Owner {
 			continue
 		}
+		// Set the price in the trade to the price of the asset (in case a price was changed)
+		currentTrade.Amount = res.Price
 		// Transaction is still valid, add it to the validTrades
 		// Append the energy asset to the energy index
 		validTrades.OpenTrades = append(validTrades.OpenTrades, currentTrade)
