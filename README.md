@@ -32,7 +32,75 @@ Example: Read the variable "ece" from the chaincode state
   "id": 0
 }
 ```
+### See all of the available Query functions  
+Function name: "query_functions"  
+Arguments: 0  
 
+Example:  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "query",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "query_functions",
+      "args": []
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
+### See all of the available Invoke functions
+Function name: "invoke_functions"  
+Arguments: 0  
+
+Example:  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "query",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "invoke_functions",
+      "args": []
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
+### See all of the open trade orders
+Function name: "open_trades"  
+Arguments: 0  
+
+Example:  
+```javascript
+{
+  "jsonrpc": "2.0",
+  "method": "query",
+  "params": {
+    "type": 1,
+    "chaincodeID": {
+      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+    },
+    "ctorMsg": {
+      "function": "open_trades",
+      "args": []
+    },
+    "secureContext": "user_type1_1"
+  },
+  "id": 0
+}
+```
 ## Invoke  
 The "method" property in the JSON object that is sent to /chaincode for operations in this section should be set to "query".  
 ### Write a variable to the chaincode state  
@@ -138,7 +206,7 @@ Example: Set the owner of asset1 to alice
       "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
     },
     "ctorMsg": {
-      "function": "set_owner
+      "function": "set_owner",
       "args": [
         "asset1",
         "alice"
