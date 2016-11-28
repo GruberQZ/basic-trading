@@ -22,7 +22,7 @@ Example: Read the variable "ece" from the chaincode state
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "read",
@@ -47,7 +47,7 @@ Example:
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "query_functions",
@@ -70,7 +70,7 @@ Example:
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "invoke_functions",
@@ -93,7 +93,7 @@ Example:
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "open_trades",
@@ -117,7 +117,7 @@ Example: View energy assets owned by bob
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "view_my_assets",
@@ -146,7 +146,7 @@ Example: Write the value "485" to the variable "ece" to the chaincode state
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "write",
@@ -173,7 +173,7 @@ Example: Delete the variable "ece" from the chaincode state
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "delete",
@@ -202,7 +202,7 @@ Example: Create a new energy asset called "asset1" that is owned by bob with ene
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "init_energy",
@@ -232,7 +232,7 @@ Example: Set the owner of asset1 to alice
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "set_owner",
@@ -260,7 +260,7 @@ Example: Bob creates an open trade order for his asset called "asset1"
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "open_trade",
@@ -289,7 +289,7 @@ Example: alice purchases the asset "asset1" that bob listed previously
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "perform_trade",
@@ -318,7 +318,7 @@ Example: Remove the bob's open trade order for asset1
   "params": {
     "type": 1,
     "chaincodeID": {
-      "name": "2553575989126bf89371ff4a63c40221f72d0f141ffdfde3ba196fde5df53621f1295ce19dbcc92d68dc5c67235e056b1eb52e9bdde9e03c8e799f22f8439910"
+      "name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"
     },
     "ctorMsg": {
       "function": "remove_trade",
