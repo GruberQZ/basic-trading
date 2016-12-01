@@ -218,7 +218,8 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 
 	// Check to make sure number of arguments is correct
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: name of variable to query")
+		retStr = "Incorrect number of arguments. Expecting 1: name of variable to query"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Get the variable from the chaincode state
@@ -319,9 +320,11 @@ func (t *SimpleChaincode) view_my_assets(stub shim.ChaincodeStubInterface, args 
 // Delete function
 // Remove a key/value pair from the chaincode state
 func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var retStr string
 	// Check number of arguments passed in
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: key/value pair to delete")
+		retStr = "Incorrect number of arguments. Expecting 1: key/value pair to delete"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Remove key from the chaincode state
@@ -364,7 +367,7 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 	jsonAsBytes, _ := json.Marshal(energyIndex)
 	err = stub.PutState(energyIndexStr, jsonAsBytes)
 	// Successful exit
-	retStr := "Variable/Asset [" + name + "] deleted successfully."
+	retStr = "Variable/Asset [" + name + "] deleted successfully."
 	return []byte(retStr), nil
 }
 
@@ -865,8 +868,8 @@ func (t *SimpleChaincode) complete_charging_trade(stub shim.ChaincodeStubInterfa
 			return []byte("Charging for trade of asset [" + id + "] at " + args[0] + " complete."), nil
 		}
 	}
-
-	return []byte("Could not find asset [" + id + "] at " + args[0] + " in the charging trades queue."), nil
+	retStr = "Could not find asset [" + id + "] at " + args[0] + " in the charging trades queue."
+	return []byte(retStr), errors.New(retStr)
 }
 
 // Clean up open trades
