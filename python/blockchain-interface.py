@@ -1,4 +1,5 @@
 import json
+import re
 from tkinter import *
 import requests
 import tkinter as tk
@@ -79,6 +80,7 @@ class Application(Frame):
         method = str("\"" + method + "\",")
         function = "\"" + function + "\","
         arguments = "\"" + arguments + "\""
+        arguments = arguments.replace(',', '",\n"')
 
         data = data1 + method + data2 + function + data3 + arguments + data4
         # data = data.replace('\r\n', '\\r\\n')
@@ -92,12 +94,38 @@ class Application(Frame):
             print("Time to hang it up, let Kostas know we weren't read :'(")
             exit(e)
 
+        response = r.text
+
+
+        print(response)
+        if "OK" not in response:
+            print("We got a bad response")
+            self.textArea2.config(state=NORMAL)
+            self.textArea2.delete("1.0", END)
+            self.textArea2.insert(END, "Entered Params are Invalid")
+            self.textArea2.config(state=DISABLED)
+            return
+
+
+        response = response.replace('\\"', "")
+        response = response.replace('"', "")
+        response = response.replace('{status:OK,', "")
+        if "jsonrpc:2.0," in response:
+            response = response.replace("jsonrpc:2.0,", "")
+        if ",id:0" in response:
+            response = response.replace(",id:0", "")
+
+        response = response.replace('{', "")
+        response = response.replace('}', "")
+        response = response.replace('message:', '\n\n')
+
         self.textArea2.config(state = NORMAL)
         self.textArea2.delete("1.0", END)
-        self.textArea2.insert(END, r.text)
+        self.textArea2.insert(END, response)
         self.textArea2.config(state = DISABLED)
 
-        pprint.pprint(r.text)
+        print("Data entered: \n\n" + data)
+        print("Response received: \n\t" + r.text)
 
 root = Tk()
 root.title("Bluemix Blockchain-Interface")
