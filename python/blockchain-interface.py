@@ -17,10 +17,10 @@ url = "https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/c
 
 #print(data1)
 
-data1 = "{\"jsonrpc\": \"2.0\",\"method\": " #method type here
-data2 = ",\"params\": {\"type\": 1,\"chaincodeID\":{\"name\": \"76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a\"},\"ctorMsg\":{\"function\": " #params.ctorMsg.function args
-data3 = ",\"args\": [" # params.ctorMsg.args here
-data4 = "]},\"secureContext\": \"user_type1_1\"},\"id\": 0}"
+data1 = "{\"jsonrpc\": \"2.0\",\n\"method\": " #method type here
+data2 = "\n\"params\": {\n\"type\": 1,\n\"chaincodeID\":{\n\"name\": \"76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a\"\n},\n\"ctorMsg\":{\n\"function\": " #params.ctorMsg.function args
+data3 = "\n\"args\": [" # params.ctorMsg.args here
+data4 = "]\n},\n\"secureContext\": \"user_type1_1\"\n},\n\"id\": 0\n}"
 
 
 
@@ -72,62 +72,32 @@ class Application(Frame):
 
         # method, params.ctorMsg.function, and params.ctorMsg.args are the only ones that can change
 
-        method = self.methodText.get("1.0", END)
-        function = self.functionText.get("1.0", END)
-        arguments = self.argumentsText.get("1.0", END)
+        method = self.methodText.get("1.0", 'end-1c')
+        function = self.functionText.get("1.0", 'end-1c')
+        arguments = self.argumentsText.get("1.0", 'end-1c')
 
-        method = "\"" + str(method) + "\""
-        function = "\"" + str(function) + "\""
-        arguments = "\"" + str(arguments) + "\""
-
-        #print(data1 + method + data2)
+        method = str("\"" + method + "\",")
+        function = "\"" + function + "\","
+        arguments = "\"" + arguments + "\""
 
         data = data1 + method + data2 + function + data3 + arguments + data4
-        print(data)
-        #data = data.replace('\r\n', '\\r\\n')
-        data = data.strip('\n')
-
-
-        #print("json entered was: " + data)
-
-        #print(data)
-
-        r = requests.post(url, data = data, json = True)
-        r.headers = 'Content-type', 'application/json'
-        r.encoding = 'utf-8'
-
-
-        # data = json.loads(data, strict = False)
-        #
-        # #print(data)
-        #
-        # req = urllib.request.Request(url)
-        # req.add_header('Content-type', 'application/json')
-        #
-        # # Test opening of google
-        # try:
-        #     urllib.request.urlopen(url, json.dumps(data).encode('utf-8'))
-        # except urllib.request.HTTPError as e:
-        #     print(e.code)
-        #     print(e.msg)
-        #     print("We couldn't get to: " + str(url))
-        #     print("Time to kill yourself...")
-        #     exit()
-        # print("We made it to: " + str(url))
-        #
-        # #response = urllib.request.urlopen(req, json.dumps(data).encode('utf-8'))
-        #
-        # httpResponse =http.client.HTTPResponse.read(response)
+        # data = data.replace('\r\n', '\\r\\n')
+        # data = data.replace('\t', '')
+        try:
+            r = requests.post(url, data = data, json = True)
+            r.headers = 'Content-type', 'application/json'
+            r.encoding = 'utf-8'
+        except requests.ConnectionError as e:
+            print("We messed up boys")
+            print("Time to hang it up, let Kostas know we weren't read :'(")
+            exit(e)
 
         self.textArea2.config(state = NORMAL)
         self.textArea2.delete("1.0", END)
-        self.textArea2.insert(END, r.text)#httpResponse)
+        self.textArea2.insert(END, r.text)
         self.textArea2.config(state = DISABLED)
 
-        #pprint.pprint(httpResponse)
-
-        print()
-        print(r.text)
+        pprint.pprint(r.text)
 
 root = Tk()
 root.title("Bluemix Blockchain-Interface")
