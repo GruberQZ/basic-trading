@@ -6,7 +6,7 @@ import urllib.request
 import http.client
 
 url = "https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode"
-#url = "http://www.google.com"
+url = "http://www.google.com"
 
  # data1 = str({"jsonrpc": "2.0","method": "query","params": {"type": 1,"chaincodeID":
  #     {"name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"},"ctorMsg":
@@ -32,9 +32,6 @@ class Application(Frame):
         self.pack()
         #self.pack_propagate(0)
         self.create_widgets()
-
-
-
 
     def create_widgets(self):
 
@@ -68,7 +65,7 @@ class Application(Frame):
         # self.textArea1 = Text(self, height = 20, width = 50)
         # self.textArea1.grid(row = 0, column = 0)
         # self.textArea1.insert(END, "This is Json sent to Bluemix")
-        #self.textArea1.config(text = "This is where text will be sent to Bluemix")
+        # self.textArea1.config(text = "This is where text will be sent to Bluemix")
 
     def buttonClick(self):
 
@@ -99,6 +96,17 @@ class Application(Frame):
         req = urllib.request.Request(url)
         req.add_header('Content-type', 'application/json')
 
+        # Test opening of google
+        try:
+            urllib.request.urlopen(url)
+        except urllib.request.HTTPError as e:
+            print(e.code)
+            print(e.msg)
+            print("We couldn't get to: " + str(url))
+            print("Time to kill yourself...")
+            exit()
+        print("Back from opening url")
+
         response = urllib.request.urlopen(req, json.dumps(data).encode('utf-8'))
 
         httpResponse =http.client.HTTPResponse.read(response)
@@ -111,7 +119,7 @@ class Application(Frame):
         pprint.pprint(httpResponse)
 
 root = Tk()
-root.title("Send json to Bluemix")
+root.title("Bluemix Blockchain-Interface")
 root.geometry("450x425")
 app = Application(root)
 root.mainloop()
