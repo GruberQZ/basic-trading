@@ -1,12 +1,13 @@
 import json
 from tkinter import *
+import requests
 import tkinter as tk
 import pprint
 import urllib.request
 import http.client
 
 url = "https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode"
-url = "http://www.google.com"
+#url = "http://maps.googleapis.com/maps/api/geocode/json?address=google"
 
  # data1 = str({"jsonrpc": "2.0","method": "query","params": {"type": 1,"chaincodeID":
  #     {"name": "76c1e5a0f389b61ed57ffb68be07aae7fa1c63dc98361afc50efb2d6fab41e1536c0270ffa31fb9a6b83d9829c33924d5f47ec16e3517df5c7dba80c082f758a"},"ctorMsg":
@@ -69,7 +70,7 @@ class Application(Frame):
 
     def buttonClick(self):
 
-    #   method, params.ctorMsg.function, and params.ctorMsg.args are the only ones that can change
+        # method, params.ctorMsg.function, and params.ctorMsg.args are the only ones that can change
 
         method = self.methodText.get("1.0", END)
         function = self.functionText.get("1.0", END)
@@ -84,39 +85,49 @@ class Application(Frame):
         data = data1 + method + data2 + function + data3 + arguments + data4
         print(data)
         #data = data.replace('\r\n', '\\r\\n')
+        data = data.strip('\n')
+
 
         #print("json entered was: " + data)
 
         #print(data)
 
-        data = json.loads(data, strict = False)
+        r = requests.post(url, data = data, json = True)
+        r.headers = 'Content-type', 'application/json'
+        r.encoding = 'utf-8'
 
-        #print(data)
 
-        req = urllib.request.Request(url)
-        req.add_header('Content-type', 'application/json')
-
-        # Test opening of google
-        try:
-            urllib.request.urlopen(url)
-        except urllib.request.HTTPError as e:
-            print(e.code)
-            print(e.msg)
-            print("We couldn't get to: " + str(url))
-            print("Time to kill yourself...")
-            exit()
-        print("Back from opening url")
-
-        response = urllib.request.urlopen(req, json.dumps(data).encode('utf-8'))
-
-        httpResponse =http.client.HTTPResponse.read(response)
+        # data = json.loads(data, strict = False)
+        #
+        # #print(data)
+        #
+        # req = urllib.request.Request(url)
+        # req.add_header('Content-type', 'application/json')
+        #
+        # # Test opening of google
+        # try:
+        #     urllib.request.urlopen(url, json.dumps(data).encode('utf-8'))
+        # except urllib.request.HTTPError as e:
+        #     print(e.code)
+        #     print(e.msg)
+        #     print("We couldn't get to: " + str(url))
+        #     print("Time to kill yourself...")
+        #     exit()
+        # print("We made it to: " + str(url))
+        #
+        # #response = urllib.request.urlopen(req, json.dumps(data).encode('utf-8'))
+        #
+        # httpResponse =http.client.HTTPResponse.read(response)
 
         self.textArea2.config(state = NORMAL)
         self.textArea2.delete("1.0", END)
-        self.textArea2.insert(END, httpResponse)
+        self.textArea2.insert(END, r.text)#httpResponse)
         self.textArea2.config(state = DISABLED)
 
-        pprint.pprint(httpResponse)
+        #pprint.pprint(httpResponse)
+
+        print()
+        print(r.text)
 
 root = Tk()
 root.title("Bluemix Blockchain-Interface")
