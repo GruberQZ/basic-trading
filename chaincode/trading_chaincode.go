@@ -16,8 +16,9 @@ import (
 type SimpleChaincode struct {
 }
 
-var energyIndexStr = "_energyindex" // name for the key/value that will store a list of all known energy
-var openTradesStr = "_opentrades"   // name for the key/value that will store a list of open trades
+var energyIndexStr = "_energyindex"       // name for the key/value that will store a list of all known energy
+var openTradesStr = "_opentrades"         // name for the key/value that will store a list of open trades
+var awaitingChargeStr = "_awaitingcharge" // name for the key/value that will store a list of trades waiting for charger
 
 type Energy struct {
 	Id     string `json:"id"`     // Unique Identifier
@@ -50,16 +51,19 @@ func main() {
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	var Aval int
 	var err error
+	var retStr string
 
 	// Check the number of args passed in
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: Initial value")
+		retStr = "Incorrect number of arguments. Expecting 1: Initial value"
+		return []byte(retStr), errors.New("Incorrect number of arguments. Expecting 1: Initial value")
 	}
 
 	// Get initial value
 	Aval, err = strconv.Atoi(args[0])
 	if err != nil {
-		return nil, errors.New("Expecting integer value for asset holding")
+		retStr = "Incorrect number of arguments. Expecting 1: Initial value"
+		return []byte(retStr), errors.New("Expecting integer value for asset holding")
 	}
 
 	// Write the state to the ledger
@@ -88,7 +92,8 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	}
 
 	// Successful init return
-	return nil, nil
+	retStr = "Chaincode state initialized successfully."
+	return []byte(retStr), nil
 }
 
 // Run function - entry point for invocations
@@ -191,6 +196,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var name, jsonResp string
 	var err error
+	var retStr string
 
 	// Check to make sure number of arguments is correct
 	if len(args) != 1 {
@@ -201,8 +207,9 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	name = args[0]
 	valAsBytes, err := stub.GetState(name)
 	if err != nil {
+		retStr = "Could not get state for variable " + name
 		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
-		return nil, errors.New(jsonResp)
+		return []byte(retStr), errors.New(jsonResp)
 	}
 
 	// Return message if variable doesn't exist
@@ -218,13 +225,15 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 // Query functions
 // Return a list of all available query function names
 func (t *SimpleChaincode) query_functions(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	return []byte("read, query_functions, invoke_functions, open_trades"), nil
+	retStr := "read, query_functions, invoke_functions, open_trades"
+	return []byte(retStr), nil
 }
 
 // Invoke functions
 // Return a list of all available invoke function names
 func (t *SimpleChaincode) invoke_functions(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	return []byte("init, delete, write, init_energy, set_owner, set_price, open_trade, perform_trade, remove_trade"), nil
+	retStr := "init, delete, write, init_energy, set_owner, set_price, open_trade, perform_trade, remove_trade"
+	return []byte(retStr), nil
 }
 
 // Query Open Trades
@@ -241,9 +250,12 @@ func (t *SimpleChaincode) open_trades(stub shim.ChaincodeStubInterface) ([]byte,
 // View My Assets
 // View a list of all assets owned by an individual
 func (t *SimpleChaincode) view_my_assets(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var retStr string
+
 	// Get parameters
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1: Owner's name")
+		retStr = "Incorrect number of arguments. Expecting 1: Owner's name"
+		return []byte(retStr), errors.New(retStr)
 	}
 	owner := args[0]
 	var ownerAssets []Energy
@@ -278,7 +290,8 @@ func (t *SimpleChaincode) view_my_assets(stub shim.ChaincodeStubInterface, args 
 	// Return the completed list to the requester
 	// Send message if owner does not own anything
 	if len(ownerAssets) == 0 {
-		return []byte(owner + ", it appears you do not own any assets!"), nil
+		retStr = owner + ", it appears you do not own any assets!"
+		return []byte(retStr), errors.New(retStr)
 	}
 	// Prepare ownerAssets for return
 	jsonAsBytes, _ := json.Marshal(ownerAssets)
@@ -333,7 +346,8 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 	jsonAsBytes, _ := json.Marshal(energyIndex)
 	err = stub.PutState(energyIndexStr, jsonAsBytes)
 	// Successful exit
-	return nil, nil
+	retStr := "Variable/Asset [" + name + "] deleted successfully."
+	return []byte(retStr), nil
 }
 
 // Write function
@@ -355,13 +369,15 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 	}
 
 	// Successful exit
-	return nil, nil
+	retStr := "Successfully set value of [" + name + "] to " + value
+	return []byte(retStr), nil
 }
 
 // Initialize new energy asset
 // Create a new energy asset and store it in the chaincode state
 func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
+	var retStr string
 
 	// Arguments passed in the following order:
 	// 0 --> "asset1" == Unique Identifier
@@ -371,33 +387,40 @@ func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []s
 
 	// Check the number of arguments passed in
 	if len(args) != 4 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 4.")
+		retStr = "Incorrect number of arguments. Expecting 4."
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Check for valid input
 	fmt.Println("Creating a new energy asset")
 	if len(args[0]) <= 0 {
-		return nil, errors.New("1st argument must be a non-empty string")
+		retStr = "1st argument must be a non-empty string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	if len(args[1]) <= 0 {
-		return nil, errors.New("2nd argument must be a non-empty string")
+		retStr = "2nd argument must be a non-empty string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	if len(args[2]) <= 0 {
-		return nil, errors.New("3rd argument must be a non-empty string")
+		retStr = "3rd argument must be a non-empty string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	if len(args[3]) <= 0 {
-		return nil, errors.New("4th argument must be a non-empty string")
+		retStr = "4th argument must be a non-empty string"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Rename and convert variables
 	id := strings.ToLower(args[0])
 	amount, err := strconv.Atoi(args[1])
 	if err != nil {
-		return nil, errors.New("2nd argument must be a numeric string")
+		retStr = "2nd argument must be a numeric string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	price, err := strconv.Atoi(args[2])
 	if err != nil {
-		return nil, errors.New("3rd argument must be a numeric string")
+		retStr = "3rd argument must be a numeric string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	owner := strings.ToLower(args[3])
 
@@ -412,7 +435,8 @@ func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []s
 	if res.Id == id {
 		fmt.Println("An energy asset with this id already exists: " + id)
 		fmt.Println(res)
-		return nil, errors.New("An energy asset with this id already exists")
+		retStr = "An energy asset with id [" + id + "] already exists"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Build the JSON string representation of the new energy asset
@@ -440,19 +464,22 @@ func (t *SimpleChaincode) init_energy(stub shim.ChaincodeStubInterface, args []s
 
 	// Debug message & successful return
 	fmt.Println("End initialize energy asset")
-	return nil, nil
+	retStr = "Asset [" + id + "] created successfully."
+	return []byte(retStr), nil
 }
 
 // set_owner function
 // Set the owner of an energy asset
 func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var retStr string
 	var err error
 
 	// Arguments passed in the following order:
 	// 0 --> "asset1" == Unique Identifier
 	// 1 --> "alice" == New owner of this asset
 	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2: asset identifier and new owner")
+		retStr = "Incorrect number of arguments. Expecting 2: asset identifier and new owner"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	id := args[0]
@@ -478,26 +505,31 @@ func (t *SimpleChaincode) set_owner(stub shim.ChaincodeStubInterface, args []str
 
 	// Successful exit
 	fmt.Println("Done setting owner")
-	return nil, nil
+	retStr = "Asset [" + id + "] is now owned by " + owner
+	return []byte(retStr), nil
 }
 
 // Set price function
 // Set the price attribute of an energy asset
 func (t *SimpleChaincode) set_price(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
+	var retStr string
 
 	// Check arguments
 	if len(args) != 3 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 3.")
+		retStr = "Incorrect number of arguments. Expecting 3."
+		return []byte(retStr), errors.New(retStr)
 	}
 	owner := args[0]
 	id := args[1]
 	newPrice, err := strconv.Atoi(args[2])
 	if err != nil {
-		return nil, errors.New("Price (3rd argument) must be a numeric string")
+		retStr = "Price (3rd argument) must be a numeric string"
+		return []byte(retStr), errors.New(retStr)
 	}
 	if newPrice < 0 {
-		return nil, errors.New("Price (3rd argument) must not be less than 0")
+		retStr = "Price (3rd argument) must not be less than 0"
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Get the energy index
@@ -525,7 +557,8 @@ func (t *SimpleChaincode) set_price(stub shim.ChaincodeStubInterface, args []str
 			json.Unmarshal(assetAsBytes, &res)
 			// Verify that the energy asset is owned by the person requesting the price adjustment
 			if res.Owner != owner {
-				return nil, errors.New("Error: Asset not owned by requester")
+				retStr = "Error: " + owner + " does not own asset [" + id + "]"
+				return []byte(retStr), errors.New(retStr)
 			}
 			// Change the price of the asset and write it back into the chaincode state
 			res.Price = newPrice
@@ -535,18 +568,21 @@ func (t *SimpleChaincode) set_price(stub shim.ChaincodeStubInterface, args []str
 				return nil, err
 			}
 			// Found asset to remove, return
-			return []byte("Price of " + id + " changed to " + args[2]), nil
+			retStr = "Price of " + id + " changed to " + args[2]
+			return []byte(retStr), nil
 		}
 	}
 
 	// Unsuccessful return
-	return nil, errors.New("Price could not be set because asset does not exist")
+	retStr = "Price could not be set because asset [" + id + "] does not exist"
+	return []byte(retStr), errors.New(retStr)
 }
 
 // open_trade function
 // Create an open trade for an energy asset you have
 func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
+	var retStr string
 
 	fmt.Println("Starting open_trade")
 	// Arguments passed in the following order:
@@ -554,7 +590,8 @@ func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []st
 	// 1 --> "asset1" == Unique Identifier
 
 	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 4.")
+		retStr = "Incorrect number of arguments. Expecting 4."
+		return []byte(retStr), errors.New(retStr)
 	}
 	owner := args[0]
 	id := args[1]
@@ -567,7 +604,8 @@ func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []st
 	res := Energy{}
 	json.Unmarshal(assetAsBytes, &res)
 	if res.Owner != owner {
-		return nil, errors.New("Invalid trade opening: " + owner + " does not own the asset " + id)
+		retStr = "Invalid trade opening: " + owner + " does not own the asset " + id
+		return []byte(retStr), errors.New(retStr)
 	}
 
 	// Verify that the asset is not current part of an outstanding trade
@@ -582,7 +620,8 @@ func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []st
 	// Search through open trades looking for asset
 	for i := range trades.OpenTrades {
 		if trades.OpenTrades[i].Id == id {
-			return nil, errors.New("Invalid trade opening: Asset for trade cannot be part of existing open trade")
+			retStr = "Invalid trade opening: Asset for trade cannot be part of existing open trade"
+			return []byte(retStr), errors.New(retStr)
 		}
 	}
 
@@ -607,19 +646,22 @@ func (t *SimpleChaincode) open_trade(stub shim.ChaincodeStubInterface, args []st
 		return nil, err
 	}
 	fmt.Println("End open trade")
-	return nil, nil
+	retStr = owner + " successfully opened trade for asset [" + id + "]."
+	return []byte(retStr), nil
 }
 
 // Perform trade function
 // Close an open trade and move ownership to the buyer
 func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
+	var retStr string
 
 	// Arguments are passed in the following order:
 	// 0 --> "asset1" == Unique Id of the energy asset to trade
 	// 1 --> "alice" == New owner
 	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
+		retStr = "Incorrect number of arguments. Expecting 2."
+		return []byte(retStr), errors.New(retStr)
 	}
 	id := args[0]
 	newOwner := args[1]
@@ -649,7 +691,8 @@ func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args [
 
 			// Verify that the new owner is not the current owner
 			if asset.Owner == newOwner {
-				return nil, errors.New("New asset owner cannot be the current owner")
+				retStr = newOwner + " cannot accept their own trade order"
+				return []byte(retStr), errors.New(retStr)
 			}
 
 			// Change the owner of the asset
@@ -666,17 +709,20 @@ func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args [
 		}
 	}
 	fmt.Println("End perform trade")
-	return nil, nil
+	retStr = "Trade complete: " + newOwner + " now owns asset [" + id + "]."
+	return []byte(retStr), nil
 }
 
 // Remove Open trade
 // Close an open trade with no change of ownership taking place
 func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
+	var retStr string
 
 	// Only argument needed is the unique ID of the asset that should no longer be eligible for trade
 	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
+		retStr = "Incorrect number of arguments. Expecting 2."
+		return []byte(retStr), errors.New(retStr)
 	}
 	owner := args[0]
 	id := args[1]
@@ -697,7 +743,8 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 			fmt.Println("Found trade to remove, checking owner")
 			// Verify owner is the one removing the trade
 			if trades.OpenTrades[i].Owner != owner {
-				return nil, errors.New("Error removing trade: Only trade order creator can remove their trade order.")
+				retStr = "Error removing trade: Only trade order creator can remove this trade order."
+				return []byte(retStr), errors.New(retStr)
 			}
 			// Remove this trade from the list
 			trades.OpenTrades = append(trades.OpenTrades[:i], trades.OpenTrades[i+1:]...)
@@ -714,7 +761,8 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 
 	// Successful return
 	fmt.Println("End remove trade")
-	return nil, nil
+	retStr = "Open trade for asset [" + id + "] has been removed."
+	return []byte(retStr), nil
 }
 
 // Clean up open trades
