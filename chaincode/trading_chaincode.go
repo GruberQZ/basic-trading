@@ -16,9 +16,9 @@ import (
 type SimpleChaincode struct {
 }
 
-var energyIndexStr = "_energyindex"       // name for the key/value that will store a list of all known energy
-var openTradesStr = "_opentrades"         // name for the key/value that will store a list of open trades
-var awaitingChargeStr = "_awaitingcharge" // name for the key/value that will store a list of trades waiting for charger
+var energyIndexStr = "_energyindex"      // name for the key/value that will store a list of all known energy
+var openTradesStr = "_opentrades"        // name for the key/value that will store a list of open trades
+var chargingTradesStr = "_waitingtrades" // name for the key/value that will store a list of trades waiting for charger
 
 type Energy struct {
 	Id     string `json:"id"`     // Unique Identifier
@@ -37,6 +37,10 @@ type AnOpenTrade struct {
 
 type AllTrades struct {
 	OpenTrades []AnOpenTrade `json:"open_trades"`
+}
+
+type ChargingTrades struct {
+	WaitingTrades []AnOpenTrade `json:"waiting_trades"`
 }
 
 // Main function - Runs on start
@@ -87,6 +91,15 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	var trades AllTrades
 	jsonAsBytes, _ = json.Marshal(trades)
 	err = stub.PutState(openTradesStr, jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Clear the trade struct by making a new ChargingTrades struct (empty by default)
+	// and assigning it to chargingTradesStr
+	var trades2 ChargingTrades
+	jsonAsBytes, _ = json.Marshal(trades2)
+	err = stub.PutState(chargingTradesStr, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -156,13 +169,16 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	} else if function == "remove_trade" { // Cancel an open trade order
 		// Pass arguments along to the remove_trade function
 		return t.remove_trade(stub, args)
+	} else if function == "complete_charging_trade" { // Get the next trade to be charged
+		// Pass arguments along to the get_charging_trade function
+		return t.complete_charging_trade(stub, args)
 	}
 
 	// Print error message if function not found
 	fmt.Println("Invoke() did not find function: " + function)
 
 	// Return error
-	return nil, errors.New("Received unknown function invocation: " + function)
+	return []byte("Invoke() did not find function: " + function), errors.New("Received unknown function invocation: " + function)
 }
 
 // Query function
@@ -182,13 +198,15 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		return t.open_trades(stub)
 	} else if function == "view_my_assets" {
 		return t.view_my_assets(stub, args)
+	} else if function == "get_charging_trade" {
+		return t.get_charging_trade(stub, args)
 	}
 
 	// Print message if query function not found
 	fmt.Println("Query() did not find function: " + function)
 
 	// Return an error
-	return nil, errors.New("Received unknown query function: " + function)
+	return []byte("Query() did not find function: " + function), errors.New("Received unknown query function: " + function)
 }
 
 // Read function
@@ -698,6 +716,26 @@ func (t *SimpleChaincode) perform_trade(stub shim.ChaincodeStubInterface, args [
 			// Change the owner of the asset
 			t.set_owner(stub, []string{id, newOwner})
 
+			// Add the trade to the waiting trade list if it has an energy amount higher than 0
+			if asset.Amount > 0 {
+				// Get the WaitingTrades index
+				var cTradesAsBytes []byte
+				cTradesAsBytes, err = stub.GetState(chargingTradesStr)
+				if err != nil {
+					return nil, errors.New("Failed to get charging trades")
+				}
+				var chargingTrades ChargingTrades
+				json.Unmarshal(cTradesAsBytes, &chargingTrades)
+				// Add the trade to the waiting trades
+				chargingTrades.WaitingTrades = append(chargingTrades.WaitingTrades, trades.OpenTrades[i])
+				// Put the waiting trades back into the chaincode state
+				cTradesAsBytes, err = json.Marshal(chargingTrades)
+				err = stub.PutState(chargingTradesStr, cTradesAsBytes)
+				if err != nil {
+					return nil, err
+				}
+			}
+
 			// Remove the trade from the list of open trades
 			trades.OpenTrades = append(trades.OpenTrades[:i], trades.OpenTrades[i+1:]...)
 			jsonAsBytes, _ := json.Marshal(trades)
@@ -763,6 +801,72 @@ func (t *SimpleChaincode) remove_trade(stub shim.ChaincodeStubInterface, args []
 	fmt.Println("End remove trade")
 	retStr = "Open trade for asset [" + id + "] has been removed."
 	return []byte(retStr), nil
+}
+
+// Get charging trades
+// Return the next trade order that is waiting for its turn to transfer energy
+func (t *SimpleChaincode) get_charging_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	// Don't need any arguments to retrieve next trade to charge
+	// Get the WaitingTrades index
+	tradesAsBytes, err := stub.GetState(chargingTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get open trades")
+	}
+	var trades ChargingTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	// If there are any trades to get, return the first one
+	if len(trades.WaitingTrades) > 0 {
+		// Convert the first trade to []byte and return it
+		var trade AnOpenTrade
+		trade = trades.WaitingTrades[0]
+		jsonAsBytes, _ := json.Marshal(trade)
+		return jsonAsBytes, nil
+	}
+
+	// Return nothing if no waiting trades
+	return nil, nil
+}
+
+func (t *SimpleChaincode) complete_charging_trade(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var retStr string
+	// Trade details of the charge that has been completed should be passed in
+	// Expecting 2: timestamp of trade and asset that was traded
+	// Sufficient because same asset cannot be traded at the exact same time
+	timestamp, err := strconv.ParseInt(args[0], 10, 64)
+	if err != nil {
+		retStr = "Something wrong with timestamp parameter: " + args[0]
+		return []byte(retStr), errors.New(retStr)
+	}
+	id := args[1]
+
+	// Get the WaitingTrades index
+	tradesAsBytes, err := stub.GetState(chargingTradesStr)
+	if err != nil {
+		return nil, errors.New("Failed to get open trades")
+	}
+	var trades ChargingTrades
+	json.Unmarshal(tradesAsBytes, &trades)
+
+	// Try to find the matching trade in the waiting structure
+	for i := range trades.WaitingTrades {
+		var currentTrade AnOpenTrade
+		currentTrade = trades.WaitingTrades[i]
+		if currentTrade.Id == id && currentTrade.Timestamp == timestamp {
+			// Found a match, remove it from the array
+			trades.WaitingTrades = append(trades.WaitingTrades[:i], trades.WaitingTrades[i+1:]...)
+			// Rewrite waiting trades to the chaincode state
+			jsonAsBytes, _ := json.Marshal(trades)
+			err = stub.PutState(chargingTradesStr, jsonAsBytes)
+			if err != nil {
+				return nil, err
+			}
+			// Return
+			return []byte("Charging for trade of asset [" + id + "] at " + args[0] + " complete."), nil
+		}
+	}
+
+	return []byte("Could not find asset [" + id + "] at " + args[0] + " in the charging trades queue."), nil
 }
 
 // Clean up open trades
