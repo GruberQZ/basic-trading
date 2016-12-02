@@ -51,7 +51,7 @@ def buttonClick():
     except requests.ConnectionError as e:
         print(data)
         print("We messed up boys")
-        print("Time to hang it up, let Kostas know we weren't read :'(")
+        print("Time to hang it up, let Kostas know we weren't ready :'(")
         exit(e)
 
     response = r.text
@@ -68,7 +68,8 @@ def buttonClick():
 
     response = response.replace('{', "")
     response = response.replace('}', "")
-    response = response.replace('message:', '\n\n')
+    response = response.replace('message:', '')
+    response = response.replace('result:', '')
 
     textArea2.config(state = NORMAL)
     textArea2.delete("1.0", END)
@@ -76,7 +77,7 @@ def buttonClick():
     textArea2.config(state = DISABLED)
 
     print("Data entered: \n\n" + data)
-    print("Response received: \n\t" + r.text)
+    print("Response received: \n\t" + response)
 
 textArea2 = Text( height = 10, width = 40)
 textArea2.grid(row = 0, column = 0, columnspan = 2, padx = 10, ipadx = 10, pady = 20)
@@ -103,11 +104,11 @@ button1.config(text = "Send Command", height = 1, width = 20, font = ("Arial", 2
 
 functionText = Text( height = 1, width = 20)
 functionText.grid(row = 2, column = 1, ipadx = 10)
-functionText.config(font = ("Arial", 16))
+functionText.config(font = ("Arial", 20))
 
 argumentsText = Text( height = 1, width = 20)
 argumentsText.grid(row = 3, column = 1, ipadx = 10)
-argumentsText.config(font = ("Arial", 16))
+argumentsText.config(font = ("Arial", 20))
 
 """=------------ BELOW Radio button Section -------------="""
 
