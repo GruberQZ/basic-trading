@@ -144,48 +144,48 @@ functionLabel.config(font=("Arial", 18, "underline"))
 functionLabel.grid(row = 2, columnspan = 2)
 
 iFuncWrite = Radiobutton(text = 'write', variable = FuncSel, value = 'write')
-iFuncWrite.grid(row=2, column=1)
+iFuncWrite.grid(row=7, column=1)
 iFuncWrite.config(font=("Arial", 16))
 
 iFuncDel = Radiobutton(text = 'delete', variable = FuncSel, value = 'delete')
-iFuncDel.grid(row=3, column=1)
+iFuncDel.grid(row=8, column=1)
 iFuncDel.config(font=("Arial", 16))
 
 iFuncSetOwn = Radiobutton(text = 'set_owner', variable = FuncSel, value = 'set_owner')
-iFuncSetOwn.grid(row=4, column=1)
+iFuncSetOwn.grid(row=3, column=1)
 iFuncSetOwn.config(font=("Arial", 16))
 
 iFuncOpTrade = Radiobutton(text = 'open_trade', variable = FuncSel, value = 'open_trade')
-iFuncOpTrade.grid(row=5, column=1)
+iFuncOpTrade.grid(row=4, column=1)
 iFuncOpTrade.config(font=("Arial", 16))
 
 iFuncPerfTrade = Radiobutton(text = 'perform_trade', variable = FuncSel, value = 'perform_trade')
-iFuncPerfTrade.grid(row=6, column=1)
+iFuncPerfTrade.grid(row=5, column=1)
 iFuncPerfTrade.config(font=("Arial", 16))
 
 iFuncRemTrade = Radiobutton(text = 'remove_trade', variable = FuncSel, value = 'remove_trade')
-iFuncRemTrade.grid(row=7, column=1)
+iFuncRemTrade.grid(row=6, column=1)
 iFuncRemTrade.config(font=("Arial", 16))
 
 iFuncIniTrade = Radiobutton(text = 'init_energy', variable = FuncSel, value = 'init_energy')
-iFuncIniTrade.grid(row=8, column=1)
+iFuncIniTrade.grid(row=2, column=1)
 iFuncIniTrade.config(font=("Arial", 16))
 
 qFunctionButtons = ['query_functions', 'invoke_functions', 'open_trades', 'view_my_assets', 'read']
 qFuncQuerFunc = Radiobutton(text=qFunctionButtons[0], variable=FuncSel, value=qFunctionButtons[0])
-qFuncQuerFunc.grid(row=2, column=0)
+qFuncQuerFunc.grid(row=4, column=0)
 qFuncQuerFunc.config(font=("Arial", 16))
 
 qFuncInvFunc = Radiobutton(text=qFunctionButtons[1], variable=FuncSel, value=qFunctionButtons[1])
-qFuncInvFunc.grid(row=3, column=0)
+qFuncInvFunc.grid(row=5, column=0)
 qFuncInvFunc.config(font=("Arial", 16))
 
 qFuncOpenTrade = Radiobutton(text=qFunctionButtons[2], variable=FuncSel, value=qFunctionButtons[2])
-qFuncOpenTrade.grid(row=4, column=0)
+qFuncOpenTrade.grid(row=2, column=0)
 qFuncOpenTrade.config(font=("Arial", 16))
 
 qFuncViewMyAss = Radiobutton(text=qFunctionButtons[3], variable=FuncSel, value=qFunctionButtons[3])
-qFuncViewMyAss.grid(row=5, column=0)
+qFuncViewMyAss.grid(row=3, column=0)
 qFuncViewMyAss.config(font=("Arial", 16))
 
 qFuncRead = Radiobutton(text=qFunctionButtons[4], variable=FuncSel, value=qFunctionButtons[4])
@@ -208,8 +208,8 @@ argumentsText.bind('<Return>', parse)
 
 """=------------ BELOW Radio button Section -------------="""
 
-queryButton = Radiobutton( font =("Ubuntu", 25), text = "Query", command = radioSelect1,variable =methodSel, value = 0)
-invokeButton = Radiobutton( font =("Ubuntu", 25), text = "Invoke", command = radioSelect1, variable =methodSel, value = 1)
+queryButton = Radiobutton( font =("Ubuntu", 22), text = "Query", command = radioSelect1,variable =methodSel, value = 0)
+invokeButton = Radiobutton( font =("Ubuntu", 22), text = "Invoke", command = radioSelect1, variable =methodSel, value = 1)
 
 queryButton.config(borderwidth = 10, indicatoron=False, relief = RAISED, width = 10)
 queryButton.grid(row = 1, column = 0, padx = 10)
@@ -250,6 +250,8 @@ argList2Label = Label(text = "EnergyPrice = \"100\"\nVariable = \"ece\"\nValue t
 argList2Label.grid(row=12, column=1, ipadx = 10)
 argList2Label.config(justify = LEFT, font=("Arial", 14))
 
+radioSelect1()
+qFuncOpenTrade.select()
 root.rowconfigure(13, weight = 1)
 root.rowconfigure(14, weight = 1)
 root.columnconfigure(0, weight = 1)
