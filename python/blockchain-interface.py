@@ -17,6 +17,9 @@ FuncSel = StringVar()
 def parse(event):
     buttonClick()
 
+def doNothing(event):
+    return 'break'
+
 def avoidIssue():
     qFunctionButtons = ['query_functions', 'invoke_functions', 'open_trades', 'view_my_assets', 'read']
     iFunctionButtons = ['init_energy', 'set_owner', 'open_trade', 'perform_trade', 'remove_trade',
@@ -214,7 +217,7 @@ qFuncRead.config(font=("Arial", 16))
 argumentsText = Text( height = 1, width = 20)
 argumentsText.grid(row = 9, column = 1, ipadx = 10)
 argumentsText.config(font = ("Arial", 20))
-argumentsText.bind('<Return>', parse)
+argumentsText.bind('<Return>', doNothing)
 
 
 """=------------ BELOW Radio button Section -------------="""
@@ -263,6 +266,7 @@ IfunctionListLabel.config(justify = LEFT, font=("Arial", 14))
 
 radioSelect1()
 qFuncOpenTrade.select()
+root.bind('<Return>', parse)
 root.rowconfigure(13, weight = 1)
 root.rowconfigure(14, weight = 1)
 root.columnconfigure(0, weight = 1)
