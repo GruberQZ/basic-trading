@@ -17,6 +17,15 @@ FuncSel = StringVar()
 def parse(event):
     buttonClick()
 
+def avoidIssue():
+    qFunctionButtons = ['query_functions', 'invoke_functions', 'open_trades', 'view_my_assets', 'read']
+    iFunctionButtons = ['init_energy', 'set_owner', 'open_trade', 'perform_trade', 'remove_trade',
+                        'write', 'delete']
+    if FuncSel.get() in qFunctionButtons and methodSel.get() == 1:
+        iFuncIniTrade.select()
+    if FuncSel.get() in iFunctionButtons and methodSel.get() == 0:
+        qFuncOpenTrade.select()
+
 
 def radioSelect1():
     global methodSel
@@ -54,6 +63,8 @@ def radioSelect1():
         iFuncOpTrade.config(state = "normal")
         iFuncIniTrade.config(state = "normal")
         iFuncDel.config(state = "normal")
+
+    avoidIssue()
 
 
 def buttonClick():
@@ -116,10 +127,10 @@ def buttonClick():
     print("Data entered: \n\n" + data)
     print("Response received: \n\t" + response)
 
-textArea2 = Text( height = 10, width = 90)
+textArea2 = Text( height = 10, width = 110)
 textArea2.grid(row = 0, column = 0, columnspan = 2, padx = 10, ipadx = 10, pady = 20)
 textArea2.insert(END, "This is where we will receive text from Bluemix")
-textArea2.config(state = DISABLED, font =("Times New Roman", 24))
+textArea2.config(state = DISABLED, font =("Times New Roman", 22))
 
 # label1 = Label( height = 2, text = "Method: ")
 # label1.grid(row = 1, column = 0, sticky = W)
@@ -220,35 +231,35 @@ invokeButton.grid(row = 1, column = 1, ipadx = 10)
 """=-----------------------------------------------------="""
 
 QfunctionLabel = Label(text = "Query Function List:")
-QfunctionLabel.grid(row = 13, column = 0, padx = 10)
+QfunctionLabel.grid(row = 11, column = 0, padx = 10)
 QfunctionLabel.config(font = ("Arial", 20,"underline"))
 
-QfunctionListLabel = Label(text = "query_functions\ninvoke_functions\nopen_trades\nview_my_assets: \t\"Owner\"\nread: \t\t\"Variable\"")
-QfunctionListLabel.grid(row=14, column=0, padx = 10, stick = N)
+QfunctionListLabel = Label(text = "open_trades\nview_my_assets: \t\"Owner\"\nquery_functions\ninvoke_functions\nread: \t\t\"Variable\"")
+QfunctionListLabel.grid(row=12, column=0, padx = 10, stick = N)
 QfunctionListLabel.config(justify = LEFT, font=("Arial", 14))
 
 
 IfunctionLabel = Label(text = "Invoke Function List:")
-IfunctionLabel.grid(row=13, column = 1, ipadx = 10)
+IfunctionLabel.grid(row=11, column = 1, ipadx = 10)
 IfunctionLabel.config(font = ("Arial", 20,"underline"))
 
-IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\n"
-                                  "set_owner: \t\"Asset,Owner\"\nopen_trade: \t\"Owner,Asset\"\nperform_trade: \t\"Asset,Owner\"\n"
-                                  "remove_trade: \t\"Asset,Owner\"\ninit_energy: \t\"UniqueID,Amount,\n\t\tEnergyPrice,Owner\"")
-IfunctionListLabel.grid(row=14, column=1, ipadx = 10)
+IfunctionListLabel = Label(text = "init_energy: \t\"UniqueID,Amount,\n\t\tEnergyPrice,Owner\"\nset_owner: \t\"Asset,Owner\"\n"
+                                  "open_trade: \t\"Owner,Asset\"\nperform_trade: \t\"Asset,Owner\"\n"
+                                  "remove_trade: \t\"Owner,Asset\"\nwrite: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\n")
+IfunctionListLabel.grid(row=12, column=1, ipadx = 10)
 IfunctionListLabel.config(justify = LEFT, font=("Arial", 14))
 
-argLabel = Label(text = "Arguments Available = \"Example\"")
-argLabel.grid(row=11, ipadx = 11, columnspan = 2, pady = 5)
-argLabel.config(justify = CENTER, font=("Arial", 18, "underline"))
-
-argList1Label = Label(text = "Asset Name = \"Energy1\"\nClient Name = \"Bob\"\nGasPrice = \"25\"")
-argList1Label.grid(row=12, column=0, padx = 10)
-argList1Label.config(justify = LEFT, font=("Arial", 14))
-
-argList2Label = Label(text = "EnergyPrice = \"100\"\nVariable = \"ece\"\nValue to write to Variable = \"200\"")
-argList2Label.grid(row=12, column=1, ipadx = 10)
-argList2Label.config(justify = LEFT, font=("Arial", 14))
+# argLabel = Label(text = "Arguments Available = \"Example\"")
+# argLabel.grid(row=11, ipadx = 11, columnspan = 2, pady = 5)
+# argLabel.config(justify = CENTER, font=("Arial", 18, "underline"))
+#
+# argList1Label = Label(text = "Asset Name = \"Energy1\"\nClient Name = \"Bob\"\nGasPrice = \"25\"")
+# argList1Label.grid(row=12, column=0, padx = 10)
+# argList1Label.config(justify = LEFT, font=("Arial", 14))
+#
+# argList2Label = Label(text = "EnergyPrice = \"100\"\nVariable = \"ece\"\nValue to write to Variable = \"200\"")
+# argList2Label.grid(row=12, column=1, ipadx = 10)
+# argList2Label.config(justify = LEFT, font=("Arial", 14))
 
 radioSelect1()
 qFuncOpenTrade.select()
