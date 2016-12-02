@@ -126,7 +126,7 @@ QfunctionLabel = Label(text = "Query Function List:")
 QfunctionLabel.grid(row = 5, column = 0, padx = 10)
 QfunctionLabel.config(font = ("Arial", 22,"underline"))
 
-QfunctionListLabel = Label(text = "query_functions\ninvoke_functions\nopen_trades\nview_my_assets: \t\"Client\"\nread: \t\t\"Variable\"")
+QfunctionListLabel = Label(text = "query_functions\ninvoke_functions\nopen_trades\nview_my_assets: \t\"Owner\"\nread: \t\t\"Variable\"")
 QfunctionListLabel.grid(row=6, column=0, padx = 10, stick = N)
 QfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
@@ -136,8 +136,8 @@ IfunctionLabel.grid(row=5, column = 1, ipadx = 10)
 IfunctionLabel.config(font = ("Arial", 22,"underline"))
 
 IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\n"
-                                  "set_owner: \t\"Asset,Client\"\nopen_trade: \t\"Client,Asset\"\nperform_trade: \t\"Asset,Client\"\n"
-                                  "remove_trade: \t\"Asset,Client\"\ninit_energy: \t\"Asset,EnergyPrice,\n\t\tGasPrice,Client\"")
+                                  "set_owner: \t\"Asset,Owner\"\nopen_trade: \t\"Owner,Asset\"\nperform_trade: \t\"Asset,Owner\"\n"
+                                  "remove_trade: \t\"Asset,Owner\"\ninit_energy: \t\"UniqueID,Amount,\n\t\tEnergyPrice,Owner\"")
 IfunctionListLabel.grid(row=6, column=1, ipadx = 10)
 IfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
