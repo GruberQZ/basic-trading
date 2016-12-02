@@ -12,20 +12,54 @@ data4 = "]\n},\n\"secureContext\": \"user_type1_1\"\n},\n\"id\": 0\n}"
 
 root = Tk()
 methodSel = IntVar()
+FuncSel = StringVar()
+
+def parse(event):
+    buttonClick()
+
 
 def radioSelect1():
     global methodSel
+    global iFuncWrite, iFuncSetOwn, iFuncRemTrade, iFuncPerfTrade, iFuncOpTrade, iFuncIniTrade, iFuncDel
+    global qFuncQuerFunc, qFuncInvFunc, qFuncOpenTrade, qFuncViewMyAss, qFuncRead
+
     if(methodSel.get() == 0):
-        print("QUERYING")
+        print("QUERY")
+        iFuncWrite.config(state = "disabled")
+        iFuncSetOwn.config(state = "disabled")
+        iFuncRemTrade.config(state = "disabled")
+        iFuncPerfTrade.config(state = "disabled")
+        iFuncOpTrade.config(state = "disabled")
+        iFuncIniTrade.config(state = "disabled")
+        iFuncDel.config(state = "disabled")
+
+        qFuncQuerFunc.config(state = "normal")
+        qFuncInvFunc.config(state = "normal")
+        qFuncOpenTrade.config(state = "normal")
+        qFuncViewMyAss.config(state = "normal")
+        qFuncRead.config(state = "normal")
+
     elif(methodSel.get() == 1):
-        print("INVOKING")
+        print("INVOKE")
+        qFuncQuerFunc.config(state = "disabled")
+        qFuncInvFunc.config(state = "disabled")
+        qFuncOpenTrade.config(state = "disabled")
+        qFuncViewMyAss.config(state = "disabled")
+        qFuncRead.config(state = "disabled")
+
+        iFuncWrite.config(state = "normal")
+        iFuncSetOwn.config(state = "normal")
+        iFuncRemTrade.config(state = "normal")
+        iFuncPerfTrade.config(state = "normal")
+        iFuncOpTrade.config(state = "normal")
+        iFuncIniTrade.config(state = "normal")
+        iFuncDel.config(state = "normal")
 
 
 def buttonClick():
 
     global methodSel
     # method = methodText.get("1.0", 'end-1c')
-    function = functionText.get("1.0", 'end-1c')
     arguments = argumentsText.get("1.0", 'end-1c')
 
     print("MethodSel is: " + str(methodSel))
@@ -34,6 +68,9 @@ def buttonClick():
         method = "query"
     else:
         method = "invoke"
+    # qFunctionButtons = ['query_functions', 'invoke_functions', 'open_trades', 'view_my_assets', 'read']
+
+    function = FuncSel.get()
 
     method = str("\"" + method + "\",")
     function = "\"" + function + "\","
@@ -79,10 +116,10 @@ def buttonClick():
     print("Data entered: \n\n" + data)
     print("Response received: \n\t" + response)
 
-textArea2 = Text( height = 10, width = 40)
+textArea2 = Text( height = 10, width = 90)
 textArea2.grid(row = 0, column = 0, columnspan = 2, padx = 10, ipadx = 10, pady = 20)
 textArea2.insert(END, "This is where we will receive text from Bluemix")
-textArea2.config(state = DISABLED, font =("Times New Roman", 35))
+textArea2.config(state = DISABLED, font =("Times New Roman", 24))
 
 # label1 = Label( height = 2, text = "Method: ")
 # label1.grid(row = 1, column = 0, sticky = W)
@@ -92,28 +129,87 @@ label2.grid(row =2, column = 0, padx = 10)
 label2.config(font = ("Arial", 20))
 
 label3 = Label(  height = 2, text = "Arguments: ")
-label3.grid(row = 3, column = 0, padx = 10)
+label3.grid(row = 9, column = 0, padx = 10)
 label3.config(font = ("Arial", 20))
 
 button1 = Button( command = buttonClick)
-button1.grid(row = 4, column = 0, padx = 10, columnspan = 2)
+button1.grid(row = 3, column = 0, padx = 10, columnspan = 2)
 button1.config(text = "Send Command", height = 1, width = 20, font = ("Arial", 20, "bold"), bg ="#CC0000", fg = "white")
 
 # methodText = Text( height = 1, width = 20)
 # methodText.grid(row = 1, column = 1)
 
-functionText = Text( height = 1, width = 20)
-functionText.grid(row = 2, column = 1, ipadx = 10)
-functionText.config(font = ("Arial", 20))
+functionLabel = Label(text = "Functions List")
+functionLabel.config(font=("Arial", 18, "underline"))
+functionLabel.grid(row = 2, columnspan = 2)
+
+iFuncWrite = Radiobutton(text = 'write', variable = FuncSel, value = 'write')
+iFuncWrite.grid(row=2, column=1)
+iFuncWrite.config(font=("Arial", 16))
+
+iFuncDel = Radiobutton(text = 'delete', variable = FuncSel, value = 'delete')
+iFuncDel.grid(row=3, column=1)
+iFuncDel.config(font=("Arial", 16))
+
+iFuncSetOwn = Radiobutton(text = 'set_owner', variable = FuncSel, value = 'set_owner')
+iFuncSetOwn.grid(row=4, column=1)
+iFuncSetOwn.config(font=("Arial", 16))
+
+iFuncOpTrade = Radiobutton(text = 'open_trade', variable = FuncSel, value = 'open_trade')
+iFuncOpTrade.grid(row=5, column=1)
+iFuncOpTrade.config(font=("Arial", 16))
+
+iFuncPerfTrade = Radiobutton(text = 'perform_trade', variable = FuncSel, value = 'perform_trade')
+iFuncPerfTrade.grid(row=6, column=1)
+iFuncPerfTrade.config(font=("Arial", 16))
+
+iFuncRemTrade = Radiobutton(text = 'remove_trade', variable = FuncSel, value = 'remove_trade')
+iFuncRemTrade.grid(row=7, column=1)
+iFuncRemTrade.config(font=("Arial", 16))
+
+iFuncIniTrade = Radiobutton(text = 'init_energy', variable = FuncSel, value = 'init_energy')
+iFuncIniTrade.grid(row=8, column=1)
+iFuncIniTrade.config(font=("Arial", 16))
+
+qFunctionButtons = ['query_functions', 'invoke_functions', 'open_trades', 'view_my_assets', 'read']
+qFuncQuerFunc = Radiobutton(text=qFunctionButtons[0], variable=FuncSel, value=qFunctionButtons[0])
+qFuncQuerFunc.grid(row=2, column=0)
+qFuncQuerFunc.config(font=("Arial", 16))
+
+qFuncInvFunc = Radiobutton(text=qFunctionButtons[1], variable=FuncSel, value=qFunctionButtons[1])
+qFuncInvFunc.grid(row=3, column=0)
+qFuncInvFunc.config(font=("Arial", 16))
+
+qFuncOpenTrade = Radiobutton(text=qFunctionButtons[2], variable=FuncSel, value=qFunctionButtons[2])
+qFuncOpenTrade.grid(row=4, column=0)
+qFuncOpenTrade.config(font=("Arial", 16))
+
+qFuncViewMyAss = Radiobutton(text=qFunctionButtons[3], variable=FuncSel, value=qFunctionButtons[3])
+qFuncViewMyAss.grid(row=5, column=0)
+qFuncViewMyAss.config(font=("Arial", 16))
+
+qFuncRead = Radiobutton(text=qFunctionButtons[4], variable=FuncSel, value=qFunctionButtons[4])
+qFuncRead.grid(row=6, column=0)
+qFuncRead.config(font=("Arial", 16))
+
+
+# rowStart = 2
+# for i in qFunctionButtons:
+#     b = Radiobutton(text=i, variable=iFuncSel, value=i)
+#     b.grid(row=rowStart, column=0)
+#     b.config(font=("Arial", 20))
+#     rowStart += 1
 
 argumentsText = Text( height = 1, width = 20)
-argumentsText.grid(row = 3, column = 1, ipadx = 10)
+argumentsText.grid(row = 9, column = 1, ipadx = 10)
 argumentsText.config(font = ("Arial", 20))
+argumentsText.bind('<Return>', parse)
+
 
 """=------------ BELOW Radio button Section -------------="""
 
-queryButton = Radiobutton( font =("Ubuntu", 35), text = "Query", variable =methodSel, value = 0)
-invokeButton = Radiobutton( font =("Ubuntu", 35), text = "Invoke", variable =methodSel, value = 1)
+queryButton = Radiobutton( font =("Ubuntu", 25), text = "Query", command = radioSelect1,variable =methodSel, value = 0)
+invokeButton = Radiobutton( font =("Ubuntu", 25), text = "Invoke", command = radioSelect1, variable =methodSel, value = 1)
 
 queryButton.config(borderwidth = 10, indicatoron=False, relief = RAISED, width = 10)
 queryButton.grid(row = 1, column = 0, padx = 10)
@@ -124,44 +220,39 @@ invokeButton.grid(row = 1, column = 1, ipadx = 10)
 """=-----------------------------------------------------="""
 
 QfunctionLabel = Label(text = "Query Function List:")
-QfunctionLabel.grid(row = 5, column = 0, padx = 10)
-QfunctionLabel.config(font = ("Arial", 22,"underline"))
+QfunctionLabel.grid(row = 13, column = 0, padx = 10)
+QfunctionLabel.config(font = ("Arial", 20,"underline"))
 
 QfunctionListLabel = Label(text = "query_functions\ninvoke_functions\nopen_trades\nview_my_assets: \t\"Owner\"\nread: \t\t\"Variable\"")
-QfunctionListLabel.grid(row=6, column=0, padx = 10, stick = N)
-QfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
+QfunctionListLabel.grid(row=14, column=0, padx = 10, stick = N)
+QfunctionListLabel.config(justify = LEFT, font=("Arial", 14))
 
 
 IfunctionLabel = Label(text = "Invoke Function List:")
-IfunctionLabel.grid(row=5, column = 1, ipadx = 10)
-IfunctionLabel.config(font = ("Arial", 22,"underline"))
+IfunctionLabel.grid(row=13, column = 1, ipadx = 10)
+IfunctionLabel.config(font = ("Arial", 20,"underline"))
 
 IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\n"
                                   "set_owner: \t\"Asset,Owner\"\nopen_trade: \t\"Owner,Asset\"\nperform_trade: \t\"Asset,Owner\"\n"
                                   "remove_trade: \t\"Asset,Owner\"\ninit_energy: \t\"UniqueID,Amount,\n\t\tEnergyPrice,Owner\"")
-IfunctionListLabel.grid(row=6, column=1, ipadx = 10)
-IfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
+IfunctionListLabel.grid(row=14, column=1, ipadx = 10)
+IfunctionListLabel.config(justify = LEFT, font=("Arial", 14))
 
 argLabel = Label(text = "Arguments Available = \"Example\"")
-argLabel.grid(row=7, ipadx = 10, columnspan = 2, pady = 20)
-argLabel.config(justify = CENTER, font=("Arial", 22, "underline"))
+argLabel.grid(row=11, ipadx = 11, columnspan = 2, pady = 5)
+argLabel.config(justify = CENTER, font=("Arial", 18, "underline"))
 
 argList1Label = Label(text = "Asset Name = \"Energy1\"\nClient Name = \"Bob\"\nGasPrice = \"25\"")
-argList1Label.grid(row=8, column=0, padx = 10)
-argList1Label.config(justify = LEFT, font=("Arial", 16))
+argList1Label.grid(row=12, column=0, padx = 10)
+argList1Label.config(justify = LEFT, font=("Arial", 14))
 
 argList2Label = Label(text = "EnergyPrice = \"100\"\nVariable = \"ece\"\nValue to write to Variable = \"200\"")
-argList2Label.grid(row=8, column=1, ipadx = 10)
-argList2Label.config(justify = LEFT, font=("Arial", 16))
+argList2Label.grid(row=12, column=1, ipadx = 10)
+argList2Label.config(justify = LEFT, font=("Arial", 14))
 
-# textArea1 = Text( height = 20, width = 50)
-# textArea1.grid(row = 0, column = 0)
-# textArea1.insert(END, "This is Json sent to Bluemix")
-# textArea1.config(text = "This is where text will be sent to Bluemix")
-
-root.rowconfigure(0, weight = 1)
+root.rowconfigure(13, weight = 1)
+root.rowconfigure(14, weight = 1)
 root.columnconfigure(0, weight = 1)
 root.columnconfigure(1, weight = 1)
 root.title("Bluemix Blockchain-Interface")
-#root.geometry("1300x900")
 root.mainloop()
