@@ -15,16 +15,11 @@ methodSel = IntVar()
 
 def radioSelect1():
     global methodSel
-    print(methodSel)
-    print(methodSel.get())
     if(methodSel.get() == 0):
         print("QUERYING")
-        invokeButton.deselect()
-        queryButton.select()
     elif(methodSel.get() == 1):
         print("INVOKING")
-        queryButton.deselect()
-        invokeButton.select()
+
 
 
 
@@ -117,10 +112,10 @@ argumentsText.grid(row = 3, column = 1, sticky = W)
 queryButton = Radiobutton( font =("Ubuntu", 35), text = "Query", variable =methodSel, value = 0)
 invokeButton = Radiobutton( font =("Ubuntu", 35), text = "Invoke", variable =methodSel, value = 1)
 
-queryButton.config(borderwidth = 10, indicatoron=False, relief = RAISED, width = 10, command = radioSelect1)
+queryButton.config(borderwidth = 10, indicatoron=False, relief = RAISED, width = 10)
 queryButton.grid(row = 1, column = 0, sticky = W)
 
-invokeButton.config(borderwidth=10, indicatoron=False, relief = RAISED, width = 10, command = radioSelect1)
+invokeButton.config(borderwidth=10, indicatoron=False, relief = RAISED, width = 10)
 invokeButton.grid(row = 1, column = 1, sticky = W)
 
 """=-----------------------------------------------------="""
