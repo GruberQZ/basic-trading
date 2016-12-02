@@ -2,8 +2,8 @@ import requests
 import json
 
 # Define destination URL
-url = 'https://api.github.com/events'
-# url = 'https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode'
+#url = 'https://api.github.com/events'
+url = 'https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode'
 
 # Build the request object to POST
 reqObj = {}
@@ -24,3 +24,4 @@ json_data = json.dumps(reqObj)
 #print(json_data)
 
 r = requests.get(url)
+print(r.text)
