@@ -103,9 +103,11 @@ button1.config(text = "Send Command", height = 1, width = 20, font = ("Arial", 2
 
 functionText = Text( height = 1, width = 20)
 functionText.grid(row = 2, column = 1, ipadx = 10)
+functionText.config(font = ("Arial", 16))
 
 argumentsText = Text( height = 1, width = 20)
 argumentsText.grid(row = 3, column = 1, ipadx = 10)
+argumentsText.config(font = ("Arial", 16))
 
 """=------------ BELOW Radio button Section -------------="""
 
@@ -124,7 +126,7 @@ QfunctionLabel = Label(text = "Query Function List:")
 QfunctionLabel.grid(row = 5, column = 0, padx = 10)
 QfunctionLabel.config(font = ("Arial", 22,"underline"))
 
-QfunctionListLabel = Label(text = "read\nquery_functions\ninvoke_functions\nopen_trades\nview_my_assets")
+QfunctionListLabel = Label(text = "query_functions\ninvoke_functions\nopen_trades\nview_my_assets: \t\"Client\"\nread: \t\t\"Variable\"")
 QfunctionListLabel.grid(row=6, column=0, padx = 10, stick = N)
 QfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
@@ -133,10 +135,23 @@ IfunctionLabel = Label(text = "Invoke Function List:")
 IfunctionLabel.grid(row=5, column = 1, ipadx = 10)
 IfunctionLabel.config(font = ("Arial", 22,"underline"))
 
-IfunctionListLabel = Label(text = "write\ndelete\ninit_energy\nset_owner\nopen_trade\nperform_trade\nremove_trade")
+IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\ninit_energy: \t\"Asset,EnergyPrice,GasPrice,Client\"\n"
+                                  "set_owner: \t\"Asset,Client\"\nopen_trade: \t\"Client,Asset\"\nperform_trade: \t\"Asset,Client\"\n"
+                                  "remove_trade: \t\"Asset,Client\"")
 IfunctionListLabel.grid(row=6, column=1, ipadx = 10)
 IfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
+argLabel = Label(text = "Arguments Available = \"Example\"")
+argLabel.grid(row=7, ipadx = 10, columnspan = 2, pady = 20)
+argLabel.config(justify = CENTER, font=("Arial", 22, "underline"))
+
+argList1Label = Label(text = "Asset Name = \"Energy1\"\nClient Name = \"Bob\"\nGasPrice = \"25\"")
+argList1Label.grid(row=8, column=0, padx = 10)
+argList1Label.config(justify = LEFT, font=("Arial", 16))
+
+argList2Label = Label(text = "EnergyPrice = \"100\"\nVariable = \"ece\"\nValue to write to Variable = \"200\"")
+argList2Label.grid(row=8, column=1, ipadx = 10)
+argList2Label.config(justify = LEFT, font=("Arial", 16))
 
 # textArea1 = Text( height = 20, width = 50)
 # textArea1.grid(row = 0, column = 0)
