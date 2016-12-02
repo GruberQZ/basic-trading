@@ -21,8 +21,6 @@ def radioSelect1():
         print("INVOKING")
 
 
-
-
 def buttonClick():
 
     global methodSel
@@ -81,7 +79,7 @@ def buttonClick():
     print("Response received: \n\t" + r.text)
 
 textArea2 = Text( height = 10, width = 40)
-textArea2.grid(row = 0, column = 0, columnspan = 2)
+textArea2.grid(row = 0, column = 0, columnspan = 2, padx = 10, ipadx = 10, pady = 20)
 textArea2.insert(END, "This is where we will receive text from Bluemix")
 textArea2.config(state = DISABLED, font =("Times New Roman", 35))
 
@@ -89,23 +87,25 @@ textArea2.config(state = DISABLED, font =("Times New Roman", 35))
 # label1.grid(row = 1, column = 0, sticky = W)
 
 label2 = Label(  height = 2, text = "Function: ")
-label2.grid(row =2, column = 0, sticky = W)
+label2.grid(row =2, column = 0, padx = 10)
+label2.config(font = ("Arial", 20))
 
 label3 = Label(  height = 2, text = "Arguments: ")
-label3.grid(row = 3, column = 0, sticky = W)
+label3.grid(row = 3, column = 0, padx = 10)
+label3.config(font = ("Arial", 20))
 
 button1 = Button( command = buttonClick)
-button1.grid(row = 4, column = 0, sticky = W)
-button1.config(text = "Send Command", height = 1, width = 20)
+button1.grid(row = 4, column = 0, padx = 10, columnspan = 2)
+button1.config(text = "Send Command", height = 1, width = 20, font = ("Arial", 20, "bold"), bg ="#CC0000", fg = "white")
 
 # methodText = Text( height = 1, width = 20)
 # methodText.grid(row = 1, column = 1)
 
 functionText = Text( height = 1, width = 20)
-functionText.grid(row = 2, column = 1, sticky = W)
+functionText.grid(row = 2, column = 1, ipadx = 10)
 
 argumentsText = Text( height = 1, width = 20)
-argumentsText.grid(row = 3, column = 1, sticky = W)
+argumentsText.grid(row = 3, column = 1, ipadx = 10)
 
 """=------------ BELOW Radio button Section -------------="""
 
@@ -113,29 +113,29 @@ queryButton = Radiobutton( font =("Ubuntu", 35), text = "Query", variable =metho
 invokeButton = Radiobutton( font =("Ubuntu", 35), text = "Invoke", variable =methodSel, value = 1)
 
 queryButton.config(borderwidth = 10, indicatoron=False, relief = RAISED, width = 10)
-queryButton.grid(row = 1, column = 0, sticky = W)
+queryButton.grid(row = 1, column = 0, padx = 10)
 
 invokeButton.config(borderwidth=10, indicatoron=False, relief = RAISED, width = 10)
-invokeButton.grid(row = 1, column = 1, sticky = W)
+invokeButton.grid(row = 1, column = 1, ipadx = 10)
 
 """=-----------------------------------------------------="""
 
 QfunctionLabel = Label(text = "Query Function List:")
-QfunctionLabel.grid(row = 5, column = 0, sticky = W)
-QfunctionLabel.config(font = ("Arial", 14,"underline"))
+QfunctionLabel.grid(row = 5, column = 0, padx = 10)
+QfunctionLabel.config(font = ("Arial", 22,"underline"))
 
 QfunctionListLabel = Label(text = "read\nquery_functions\ninvoke_functions\nopen_trades\nview_my_assets")
-QfunctionListLabel.grid(row=6, column=0, sticky = NW)
-QfunctionListLabel.config(justify = LEFT)
+QfunctionListLabel.grid(row=6, column=0, padx = 10, stick = N)
+QfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
 
 IfunctionLabel = Label(text = "Invoke Function List:")
-IfunctionLabel.grid(row=5, column = 1, sticky = W)
-IfunctionLabel.config(font = ("Arial", 14,"underline"))
+IfunctionLabel.grid(row=5, column = 1, ipadx = 10)
+IfunctionLabel.config(font = ("Arial", 22,"underline"))
 
 IfunctionListLabel = Label(text = "write\ndelete\ninit_energy\nset_owner\nopen_trade\nperform_trade\nremove_trade")
-IfunctionListLabel.grid(row=6, column=1, sticky = NW)
-IfunctionListLabel.config(justify = LEFT)
+IfunctionListLabel.grid(row=6, column=1, ipadx = 10)
+IfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
 
 # textArea1 = Text( height = 20, width = 50)
@@ -143,7 +143,9 @@ IfunctionListLabel.config(justify = LEFT)
 # textArea1.insert(END, "This is Json sent to Bluemix")
 # textArea1.config(text = "This is where text will be sent to Bluemix")
 
-
+root.rowconfigure(0, weight = 1)
+root.columnconfigure(0, weight = 1)
+root.columnconfigure(1, weight = 1)
 root.title("Bluemix Blockchain-Interface")
 #root.geometry("1300x900")
 root.mainloop()
