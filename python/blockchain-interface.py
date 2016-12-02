@@ -135,9 +135,9 @@ IfunctionLabel = Label(text = "Invoke Function List:")
 IfunctionLabel.grid(row=5, column = 1, ipadx = 10)
 IfunctionLabel.config(font = ("Arial", 22,"underline"))
 
-IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\ninit_energy: \t\"Asset,EnergyPrice,GasPrice,Client\"\n"
+IfunctionListLabel = Label(text = "write: \t\t\"Variable,Value\"\ndelete: \t\t\"Variable\"\n"
                                   "set_owner: \t\"Asset,Client\"\nopen_trade: \t\"Client,Asset\"\nperform_trade: \t\"Asset,Client\"\n"
-                                  "remove_trade: \t\"Asset,Client\"")
+                                  "remove_trade: \t\"Asset,Client\"\ninit_energy: \t\"Asset,EnergyPrice,\n\t\tGasPrice,Client\"")
 IfunctionListLabel.grid(row=6, column=1, ipadx = 10)
 IfunctionListLabel.config(justify = LEFT, font=("Arial", 16))
 
