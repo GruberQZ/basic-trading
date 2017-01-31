@@ -5,7 +5,7 @@ import json
 import sys
 
 # Define destination URL
-url = 'https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode'
+url = 'https://f49d9a7b5a8b4f62842153fc4019cb38-vp0.us.blockchain.ibm.com:5001/chaincode'
 
 # Build the request object to POST
 reqObj = {}
@@ -14,7 +14,7 @@ reqObj["method"] = "query"
 reqObj["params"] = {}
 reqObj["params"]["type"] = 1
 reqObj["params"]["chaincodeID"] = {}
-reqObj["params"]["chaincodeID"]["name"] = "12decb80905604f0f7ea238c51e8cd4c7496640865ba48b8798d8c35eb9be86b206c7119c925aa115513941a5c10dc9af34e6530ced4e673db2376553aa156ce"
+reqObj["params"]["chaincodeID"]["name"] = "53bef9940340843528122bc4270f75c0c7dd29d3791abaf91127c2404ddaa04843e694328fd541221199787b9086a8f098017206fed17620186e15bececd0b14"
 reqObj["params"]["ctorMsg"] = {}
 reqObj["params"]["ctorMsg"]["function"] = "get_charging_trade"
 reqObj["params"]["ctorMsg"]["args"] = []
@@ -28,7 +28,7 @@ completeObj["method"] = "invoke"
 completeObj["params"] = {}
 completeObj["params"]["type"] = 1
 completeObj["params"]["chaincodeID"] = {}
-completeObj["params"]["chaincodeID"]["name"] = "12decb80905604f0f7ea238c51e8cd4c7496640865ba48b8798d8c35eb9be86b206c7119c925aa115513941a5c10dc9af34e6530ced4e673db2376553aa156ce"
+completeObj["params"]["chaincodeID"]["name"] = "53bef9940340843528122bc4270f75c0c7dd29d3791abaf91127c2404ddaa04843e694328fd541221199787b9086a8f098017206fed17620186e15bececd0b14"
 completeObj["params"]["ctorMsg"] = {}
 completeObj["params"]["ctorMsg"]["function"] = "complete_charging_trade"
 completeObj["params"]["ctorMsg"]["args"] = []
