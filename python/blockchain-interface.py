@@ -1,10 +1,11 @@
 from tkinter import *
 import requests
 
-url = "https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode"
+#url = "https://b5b1f30cd80c4041972890286eb7e5df-vp0.us.blockchain.ibm.com:5001/chaincode"
+url = "https://f49d9a7b5a8b4f62842153fc4019cb38-vp0.us.blockchain.ibm.com:5001/chaincode"
 
 data1 = "{\"jsonrpc\": \"2.0\",\n\"method\": " #method type here
-data2 = "\n\"params\": {\n\"type\": 1,\n\"chaincodeID\":{\n\"name\": \"12decb80905604f0f7ea238c51e8cd4c7496640865ba48b8798d8c35eb9be86b206c7119c925aa115513941a5c10dc9af34e6530ced4e673db2376553aa156ce\"\n},\n\"ctorMsg\":{\n\"function\": " #params.ctorMsg.function args
+data2 = "\n\"params\": {\n\"type\": 1,\n\"chaincodeID\":{\n\"name\": \"53bef9940340843528122bc4270f75c0c7dd29d3791abaf91127c2404ddaa04843e694328fd541221199787b9086a8f098017206fed17620186e15bececd0b14\"\n},\n\"ctorMsg\":{\n\"function\": " #params.ctorMsg.function args
 data3 = "\n\"args\": [" # params.ctorMsg.args here
 data4 = "]\n},\n\"secureContext\": \"user_type1_1\"\n},\n\"id\": 0\n}"
 
